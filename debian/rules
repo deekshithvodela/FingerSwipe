@@ -1,0 +1,37 @@
+#!/usr/bin/make -f
+
+%:
+	dh $@
+
+override_dh_auto_configure:
+	cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+
+override_dh_auto_build:
+	cmake --build build --parallel
+	UV_CACHE_DIR=.uv-cache uv build
+
+override_dh_auto_install:
+	# Install C library
+	cmake --install build --prefix debian/fingerswipe/usr
+	
+	# Create isolated virtualenv inside debian packaging directory
+	uv venv --python /usr/bin/python3.13 debian/fingerswipe/opt/fingerswipe
+	
+	# Install the built wheel and its dependencies into the virtualenv
+	uv pip install --python debian/fingerswipe/opt/fingerswipe/bin/python \
+		dist/fingerswipe-1.0.0-py3-none-any.whl
+	
+	# Install systemd service, udev rules, and default config
+	debian/fingerswipe/opt/fingerswipe/bin/python install/install.py --prefix debian/fingerswipe/usr
+	
+	# Create a fully relocatable launcher wrapper script
+	mkdir -p debian/fingerswipe/opt/fingerswipe/bin
+	printf '#!/bin/sh\nexec /opt/fingerswipe/bin/python -m fingerswipe "$$@"\n' > debian/fingerswipe/opt/fingerswipe/bin/fingerswipe
+	chmod 755 debian/fingerswipe/opt/fingerswipe/bin/fingerswipe
+	
+	# Create /usr/bin symlink for CLI convenience
+	mkdir -p debian/fingerswipe/usr/bin
+	ln -sf /opt/fingerswipe/bin/fingerswipe debian/fingerswipe/usr/bin/fingerswipe
+
+override_dh_strip:
+	# Keep standard debug symbols stripping

@@ -1,0 +1,17 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "purge" ] || [ "$1" = "remove" ]; then
+    ldconfig
+    if [ -x "$(command -v udevadm)" ]; then
+        udevadm control --reload-rules || true
+        udevadm trigger --subsystem-match=input || true
+    fi
+    for user in $(loginctl list-users --no-legend | awk '{print $2}'); do
+        uid=$(id -u "$user")
+        XDG_RUNTIME_DIR=/run/user/$uid sudo -u "$user" systemctl --user daemon-reload || true
+    done
+fi
+
+#DEBHELPER#
+exit 0

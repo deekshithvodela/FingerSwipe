@@ -1,0 +1,12 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "deconfigure" ]; then
+    for user in $(loginctl list-users --no-legend | awk '{print $2}'); do
+        uid=$(id -u "$user")
+        sudo -u "$user" XDG_RUNTIME_DIR=/run/user/$uid DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus systemctl --user disable --now fingerswipe.service || true
+    done
+fi
+
+#DEBHELPER#
+exit 0

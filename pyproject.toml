@@ -1,0 +1,27 @@
+[project]
+name = "fingerswipe"
+version = "1.0.0"
+description = "Linux three-finger gesture volume controller"
+readme = "README.md"
+authors = [
+    { name = "deevodee", email = "deekshithvodela@gmail.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "ruamel-yaml>=0.19.1",
+]
+
+[project.scripts]
+fingerswipe = "fingerswipe:main"
+
+[build-system]
+requires = ["uv_build>=0.11.26,<0.12.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "black>=26.5.1",
+    "mypy>=2.1.0",
+    "pytest>=9.1.1",
+    "ruff>=0.15.20",
+]

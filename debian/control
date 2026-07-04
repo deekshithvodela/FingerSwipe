@@ -1,0 +1,11 @@
+Source: fingerswipe
+Section: sound
+Priority: optional
+Maintainer: deevodee <deekshithvodela@gmail.com>
+Build-Depends: debhelper (>= 10), cmake, pkg-config, libinput-dev, libudev-dev, libpipewire-0.3-dev
+Standards-Version: 3.9.8
+
+Package: fingerswipe
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3 (>= 3.13)
+Description: Control default PipeWire sink volume with 3-finger vertical touchpad swipes.

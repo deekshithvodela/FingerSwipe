@@ -1,0 +1,15 @@
+engine:
+  dead_zone: 0.0
+  smoothing: 1.0
+  sensitivity: 1.0
+  curve: linear
+
+volume:
+  minimum: 0.0
+  maximum: 1.0
+  step: 0.01
+  threshold: 4.0
+
+logging:
+  level: INFO
+  json: false
