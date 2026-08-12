@@ -12,7 +12,8 @@ if [ "$1" = "configure" ]; then
     for user in $(loginctl list-users --no-legend | awk '{print $2}'); do
         uid=$(id -u "$user")
         sudo -u "$user" XDG_RUNTIME_DIR=/run/user/$uid DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus systemctl --user daemon-reload || true
-        sudo -u "$user" XDG_RUNTIME_DIR=/run/user/$uid DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus systemctl --user enable --now fingerswipe.service || true
+        sudo -u "$user" XDG_RUNTIME_DIR=/run/user/$uid DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus systemctl --user enable fingerswipe.service || true
+        sudo -u "$user" XDG_RUNTIME_DIR=/run/user/$uid DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus systemctl --user restart fingerswipe.service || true
     done
 fi
 

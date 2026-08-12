@@ -1,7 +1,11 @@
 #!/bin/bash
 set -e
 
-echo "=== Building FingerSwipe Debian Package ==="
+# 0. Extract version from pyproject.toml
+VERSION=$(grep -m1 '^version =' pyproject.toml | cut -d'"' -f2)
+ARCH=$(dpkg --print-architecture)
+
+echo "=== Building FingerSwipe Debian Package v${VERSION} (${ARCH}) ==="
 
 # 1. Compile C native library
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
@@ -19,16 +23,15 @@ mkdir -p "$PKG_DIR/usr/bin"
 mkdir -p "$PKG_DIR/opt"
 
 # 4. Generate Debian control file dynamically
-ARCH=$(dpkg --print-architecture)
 cat << EOF > "$PKG_DIR/DEBIAN/control"
 Package: fingerswipe
-Version: 1.0.0
+Version: $VERSION
 Section: sound
 Priority: optional
 Architecture: $ARCH
 Maintainer: deevodee <deekshithvodela@gmail.com>
 Depends: libinput10, libudev1, libpipewire-0.3-0, python3 (>= 3.13)
-Description: Control default PipeWire sink volume with 3-finger vertical touchpad swipes.
+Description: Control default PipeWire sink volume and display brightness with 3-finger touchpad swipes.
 EOF
 
 cp debian/postinst "$PKG_DIR/DEBIAN/postinst"
@@ -44,7 +47,7 @@ cp -d build/lib/libfingerswipe.so* "$PKG_DIR/usr/lib/"
 # 6. Create virtualenv and install Python wheel
 uv venv --python /usr/bin/python3.13 "$PKG_DIR/opt/fingerswipe"
 uv pip install --python "$PKG_DIR/opt/fingerswipe/bin/python" \
-    dist/fingerswipe-1.0.0-py3-none-any.whl
+    "dist/fingerswipe-${VERSION}-py3-none-any.whl"
 
 # 7. Install systemd service and udev rules using installer script
 "$PKG_DIR/opt/fingerswipe/bin/python" install/install.py --prefix "$PKG_DIR/usr"
@@ -65,6 +68,7 @@ find "$PKG_DIR/opt/fingerswipe/bin" -type f -exec grep -l "$PWD/$PKG_DIR" {} + |
 done
 
 # 11. Build the Debian package
-dpkg-deb --root-owner-group --build "$PKG_DIR" fingerswipe_1.0.0_amd64.deb
+DEB_FILE="fingerswipe_${VERSION}_${ARCH}.deb"
+dpkg-deb --root-owner-group --build "$PKG_DIR" "$DEB_FILE"
 
-echo "=== Package Built Successfully: fingerswipe_1.0.0_amd64.deb ==="
+echo "=== Package Built Successfully: ${DEB_FILE} ==="

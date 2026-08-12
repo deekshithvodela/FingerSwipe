@@ -1,10 +1,10 @@
 #!/bin/sh
 set -e
 
-if [ "$1" = "remove" ] || [ "$1" = "deconfigure" ]; then
+if [ "$1" = "remove" ] || [ "$1" = "deconfigure" ] || [ "$1" = "upgrade" ]; then
     for user in $(loginctl list-users --no-legend | awk '{print $2}'); do
         uid=$(id -u "$user")
-        sudo -u "$user" XDG_RUNTIME_DIR=/run/user/$uid DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus systemctl --user disable --now fingerswipe.service || true
+        sudo -u "$user" XDG_RUNTIME_DIR=/run/user/$uid DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/$uid/bus systemctl --user stop fingerswipe.service || true
     done
 fi
 

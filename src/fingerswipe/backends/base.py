@@ -30,3 +30,26 @@ class AudioBackend(ABC):
     @abstractmethod
     def set_muted(self, muted: bool) -> None:
         raise NotImplementedError
+
+
+class BrightnessBackend(ABC):
+
+    @abstractmethod
+    def connect(self) -> None:
+        """Initialize the backend."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def disconnect(self) -> None:
+        """Release all resources."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def get_brightness(self) -> float:
+        """Return normalized brightness in the range [0.0, 1.0]."""
+        raise NotImplementedError
+
+    @abstractmethod
+    def set_brightness(self, value: float) -> None:
+        """Set normalized brightness in the range [0.0, 1.0]."""
+        raise NotImplementedError

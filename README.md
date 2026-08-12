@@ -1,7 +1,15 @@
 # FingerSwipe
 
-FingerSwipe is a Linux user service that controls the default PipeWire sink
-volume with three-finger vertical touchpad swipes.
+<p align="center">
+  <a href="https://github.com/deekshithvodela/FingerSwipe"><img src="https://img.shields.io/badge/version-v1.1.0-blue.svg?style=for-the-badge&logo=git" alt="Version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge" alt="License"></a>
+  <a href="https://kernel.org"><img src="https://img.shields.io/badge/platform-Linux-orange.svg?style=for-the-badge&logo=linux&logoColor=white" alt="Platform"></a>
+  <a href="https://python.org"><img src="https://img.shields.io/badge/python-3.13+-3776AB.svg?style=for-the-badge&logo=python&logoColor=white" alt="Python"></a>
+  <a href="https://kde.org"><img src="https://img.shields.io/badge/KDE_Plasma-OSD_Support-1D99F3.svg?style=for-the-badge&logo=kde&logoColor=white" alt="KDE Plasma"></a>
+  <a href="https://pipewire.org"><img src="https://img.shields.io/badge/audio-PipeWire-000000.svg?style=for-the-badge" alt="PipeWire"></a>
+</p>
+
+FingerSwipe is a lightweight, responsive Linux user service that controls default PipeWire sink volume and display brightness with three-finger touchpad swipes.
 
 ## Requirements
 
@@ -95,22 +103,49 @@ journalctl --user -u fingerswipe.service -n 50
 
 Copy `config.yaml` to `~/.config/fingerswipe/config.yaml` to customize gesture curves, sensitivity, and dead zones. Malformed configuration is rejected at startup. Run `fingerswipe --help` for explicit configuration and native-library paths.
 
+### CLI Flags & Usage
+
+```sh
+# Run service with all default components (Volume on Vertical, Brightness on Horizontal)
+fingerswipe run
+
+# Disable volume control (Brightness only)
+fingerswipe run --disable-volume
+
+# Disable brightness control (Volume only)
+fingerswipe run --disable-brightness
+
+# Swap gesture axes (Brightness on Vertical, Volume on Horizontal)
+fingerswipe run --volume-axis horizontal --brightness-axis vertical
+```
+
 ### Configuration Reference
 
-The default settings are tuned to match `FingerSwipe1` behavior (unbounded linear scaling for high responsiveness).
+The default settings provide seamless, conflict-free 3-finger volume and brightness gestures.
 
 ```yaml
 engine:
-  dead_zone: 0.0      # Minimum delta below which movement is ignored (default: 0.0)
-  smoothing: 1.0      # Smoothing factor (alpha in (0, 1]) where 1.0 is no smoothing (default: 1.0)
-  sensitivity: 1.0    # Input coordinate scaling factor (default: 1.0)
-  curve: linear       # Scaling curve ('linear', 'power', or 'exponential') (default: linear)
+  dead_zone: 0.0          # Minimum delta below which movement is ignored (default: 0.0)
+  smoothing: 1.0          # Smoothing factor (alpha in (0, 1]) where 1.0 is no smoothing (default: 1.0)
+  sensitivity: 1.0        # Input coordinate scaling factor (default: 1.0)
+  curve: linear           # Scaling curve ('linear', 'power', or 'exponential') (default: linear)
+  axis_lock_threshold: 2.0 # Motion threshold to lock gesture axis (default: 2.0)
 
 volume:
-  minimum: 0.0        # Minimum volume clamp (default: 0.0)
-  maximum: 1.0        # Maximum volume clamp (default: 1.0)
-  step: 0.01          # Volume step size per threshold (0.01 = 1%) (default: 0.01)
-  threshold: 4.0      # Accumulated vertical delta required to trigger a step (default: 4.0)
+  enabled: true           # Enable volume control (default: true)
+  axis: vertical          # Gesture axis ('vertical' or 'horizontal') (default: vertical)
+  minimum: 0.0            # Minimum volume clamp (default: 0.0)
+  maximum: 1.0            # Maximum volume clamp (default: 1.0)
+  step: 0.01              # Volume step size per threshold (0.01 = 1%) (default: 0.01)
+  threshold: 4.0          # Accumulated delta required to trigger a step (default: 4.0)
+
+brightness:
+  enabled: true           # Enable display brightness control (default: true)
+  axis: horizontal        # Gesture axis ('horizontal' or 'vertical') (default: horizontal)
+  minimum: 0.05           # Minimum brightness clamp (default: 0.05)
+  maximum: 1.0            # Maximum brightness clamp (default: 1.0)
+  step: 0.01              # Brightness step size per threshold (0.01 = 1%) (default: 0.01)
+  threshold: 4.0          # Accumulated delta required to trigger a step (default: 4.0)
 ```
 
 > [!NOTE]

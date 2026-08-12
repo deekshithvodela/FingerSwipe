@@ -13,6 +13,7 @@ extern "C" {
 
 typedef struct FSInput FSInput;
 typedef struct FSAudio FSAudio;
+typedef struct FSBrightness FSBrightness;
 
 typedef enum FSError {
     FS_OK = 0,
@@ -25,7 +26,8 @@ typedef enum FSError {
     FS_ERROR_TIMEOUT = -7,
     FS_ERROR_LIBINPUT = -100,
     FS_ERROR_PIPEWIRE = -200,
-    FS_ERROR_AUDIO_TARGET = -201
+    FS_ERROR_AUDIO_TARGET = -201,
+    FS_ERROR_BRIGHTNESS = -300
 } FSError;
 
 typedef enum FSGesturePhase {
@@ -57,6 +59,11 @@ FS_API FSError fs_audio_get_volume(FSAudio *audio, double *volume);
 FS_API FSError fs_audio_set_volume(FSAudio *audio, double volume);
 FS_API FSError fs_audio_get_muted(FSAudio *audio, bool *muted);
 FS_API FSError fs_audio_set_muted(FSAudio *audio, bool muted);
+
+FS_API FSError fs_brightness_create(FSBrightness **output);
+FS_API void fs_brightness_destroy(FSBrightness *brightness);
+FS_API FSError fs_brightness_get(FSBrightness *brightness, double *value);
+FS_API FSError fs_brightness_set(FSBrightness *brightness, double value);
 
 #ifdef __cplusplus
 }

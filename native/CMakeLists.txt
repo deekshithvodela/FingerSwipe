@@ -5,7 +5,7 @@ pkg_check_modules(PIPEWIRE REQUIRED IMPORTED_TARGET libpipewire-0.3)
 
 find_package(Threads REQUIRED)
 
-add_library(fingerswipe SHARED src/api.c src/core/libinput.c src/backends/pipewire.c)
+add_library(fingerswipe SHARED src/api.c src/core/libinput.c src/backends/pipewire.c src/backends/brightness.c)
 add_library(FingerSwipe::fingerswipe ALIAS fingerswipe)
 target_compile_definitions(fingerswipe PRIVATE FINGERSWIPE_BUILD _GNU_SOURCE)
 target_include_directories(fingerswipe PUBLIC

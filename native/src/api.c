@@ -15,6 +15,7 @@ const char *fs_error_string(FSError error) {
     case FS_ERROR_LIBINPUT: return "libinput error";
     case FS_ERROR_PIPEWIRE: return "PipeWire error";
     case FS_ERROR_AUDIO_TARGET: return "default audio sink unavailable";
+    case FS_ERROR_BRIGHTNESS: return "brightness error";
     default: return "unrecognized error";
     }
 }

@@ -18,11 +18,24 @@ class EngineConfig:
     smoothing: float = 1.0
     sensitivity: float = 1.0
     curve: str = "linear"
+    axis_lock_threshold: float = 2.0
 
 
 @dataclass(slots=True, frozen=True)
 class VolumeConfig:
+    enabled: bool = True
+    axis: str = "vertical"
     minimum: float = 0.0
+    maximum: float = 1.0
+    step: float = 0.01
+    threshold: float = 4.0
+
+
+@dataclass(slots=True, frozen=True)
+class BrightnessConfig:
+    enabled: bool = True
+    axis: str = "horizontal"
+    minimum: float = 0.05
     maximum: float = 1.0
     step: float = 0.01
     threshold: float = 4.0
@@ -38,6 +51,7 @@ class LoggingConfig:
 class Config:
     engine: EngineConfig = EngineConfig()
     volume: VolumeConfig = VolumeConfig()
+    brightness: BrightnessConfig = BrightnessConfig()
     logging: LoggingConfig = LoggingConfig()
 
 
@@ -68,12 +82,13 @@ def load_config(path: Path | None = None) -> Config:
         raise ConfigurationError(f"cannot parse {target}: {error}") from error
     if not isinstance(raw, dict):
         raise ConfigurationError("configuration root must be a mapping")
-    unknown = set(raw) - {"engine", "volume", "logging"}
+    unknown = set(raw) - {"engine", "volume", "brightness", "logging"}
     if unknown:
         raise ConfigurationError(f"unknown sections: {', '.join(sorted(unknown))}")
     try:
-        engine = EngineConfig(**_section(raw, "engine", {"dead_zone", "smoothing", "sensitivity", "curve"}))
-        volume = VolumeConfig(**_section(raw, "volume", {"minimum", "maximum", "step", "threshold"}))
+        engine = EngineConfig(**_section(raw, "engine", {"dead_zone", "smoothing", "sensitivity", "curve", "axis_lock_threshold"}))
+        volume = VolumeConfig(**_section(raw, "volume", {"enabled", "axis", "minimum", "maximum", "step", "threshold"}))
+        brightness = BrightnessConfig(**_section(raw, "brightness", {"enabled", "axis", "minimum", "maximum", "step", "threshold"}))
         logging = LoggingConfig(**_section(raw, "logging", {"level", "json"}))
     except TypeError as error:
         raise ConfigurationError(str(error)) from error
@@ -83,14 +98,31 @@ def load_config(path: Path | None = None) -> Config:
         raise ConfigurationError("engine.smoothing must be in (0, 1]")
     if engine.sensitivity <= 0.0:
         raise ConfigurationError("engine.sensitivity must be positive")
+    if engine.axis_lock_threshold <= 0.0:
+        raise ConfigurationError("engine.axis_lock_threshold must be positive")
     if engine.curve not in {"linear", "power", "exponential"}:
         raise ConfigurationError("engine.curve must be linear, power, or exponential")
+
+    if volume.axis not in {"vertical", "horizontal"}:
+        raise ConfigurationError("volume.axis must be 'vertical' or 'horizontal'")
+    if brightness.axis not in {"vertical", "horizontal"}:
+        raise ConfigurationError("brightness.axis must be 'vertical' or 'horizontal'")
+
+    if volume.enabled and brightness.enabled and volume.axis == brightness.axis:
+        raise ConfigurationError("volume and brightness cannot be assigned to the same gesture axis")
+
     if not 0.0 <= volume.minimum <= volume.maximum <= 1.0:
         raise ConfigurationError("volume bounds must satisfy 0 <= minimum <= maximum <= 1")
     if not 0.0 < volume.step <= 1.0:
         raise ConfigurationError("volume.step must be in (0, 1]")
     if volume.threshold <= 0.0:
         raise ConfigurationError("volume.threshold must be positive")
+    if not 0.0 <= brightness.minimum <= brightness.maximum <= 1.0:
+        raise ConfigurationError("brightness bounds must satisfy 0 <= minimum <= maximum <= 1")
+    if not 0.0 < brightness.step <= 1.0:
+        raise ConfigurationError("brightness.step must be in (0, 1]")
+    if brightness.threshold <= 0.0:
+        raise ConfigurationError("brightness.threshold must be positive")
     if logging.level.upper() not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
         raise ConfigurationError("logging.level is invalid")
-    return Config(engine, volume, LoggingConfig(logging.level.upper(), logging.json))
+    return Config(engine, volume, brightness, LoggingConfig(logging.level.upper(), logging.json))

@@ -231,6 +231,35 @@ def run_eligibility_checks(library_path: Optional[Path] = None) -> list[CheckRes
             "remedy": "Ensure systemd is running on your Linux distribution."
         })
 
+    # 7. Brightness Control Check
+    try:
+        from fingerswipe.backends.brightness import NativeBrightnessBackend
+        library = load_native(library_path)
+        try:
+            brightness_backend = NativeBrightnessBackend(library)
+            brightness_backend.connect()
+            brightness_backend.disconnect()
+            results.append({
+                "name": "Display Brightness",
+                "status": "PASS",
+                "details": "Successfully connected to display brightness backend.",
+                "remedy": None
+            })
+        except Exception as be:
+            results.append({
+                "name": "Display Brightness",
+                "status": "WARNING",
+                "details": f"Brightness backend warning: {be}",
+                "remedy": "Install brightnessctl or check /sys/class/backlight permissions."
+            })
+    except Exception as e:
+        results.append({
+            "name": "Display Brightness",
+            "status": "WARNING",
+            "details": f"Could not check brightness backend: {e}",
+            "remedy": "Check native library installation."
+        })
+
     return results
 
 

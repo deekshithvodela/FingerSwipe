@@ -97,7 +97,7 @@ wheels = [
 
 [[package]]
 name = "fingerswipe"
-version = "1.0.0"
+version = "1.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "ruamel-yaml" },
@@ -112,9 +112,7 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "ruamel-yaml", specifier = ">=0.19.1" },
-]
+requires-dist = [{ name = "ruamel-yaml", specifier = ">=0.19.1" }]
 
 [package.metadata.requires-dev]
 dev = [
