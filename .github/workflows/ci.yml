@@ -6,19 +6,27 @@ on:
     paths-ignore:
       - 'web/**'
       - 'docs/**'
+      - 'build/**'
+      - 'scripts/run_local_ci.sh'
       - '**.md'
       - 'LICENSE'
       - '.gitignore'
       - '.agents/**'
+      - '.gemini/**'
+      - 'assets/**'
   pull_request:
     branches: [main]
     paths-ignore:
       - 'web/**'
       - 'docs/**'
+      - 'build/**'
+      - 'scripts/run_local_ci.sh'
       - '**.md'
       - 'LICENSE'
       - '.gitignore'
       - '.agents/**'
+      - '.gemini/**'
+      - 'assets/**'
   workflow_dispatch:
 
 concurrency:
@@ -43,11 +51,11 @@ jobs:
       - name: Install system dependencies
         run: |
           # Use canonical archive mirrors with timeouts to avoid stalled Azure mirrors
-          sudo sed -i 's/azure\.archive\.ubuntu\.com/archive.ubuntu.com/g' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || true
-          sudo sed -i 's/azure\.archive\.ubuntu\.com/archive.ubuntu.com/g' /etc/apt/sources.list 2>/dev/null || true
-          sudo apt-get update -o Acquire::Retries=3 -o Acquire::http::Timeout=15
+          sudo sed -i 's|http://azure\.archive\.ubuntu\.com|http://archive.ubuntu.com|g' /etc/apt/sources.list.d/*.sources /etc/apt/sources.list 2>/dev/null || true
+          sudo sed -i 's|https://azure\.archive\.ubuntu\.com|https://archive.ubuntu.com|g' /etc/apt/sources.list.d/*.sources /etc/apt/sources.list 2>/dev/null || true
+          sudo apt-get update -o Acquire::Retries=2 -o Acquire::http::Timeout=10
           sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-            -o Acquire::Retries=3 -o Acquire::http::Timeout=15 \
+            -o Acquire::Retries=2 -o Acquire::http::Timeout=10 \
             libinput-dev \
             libudev-dev \
             libpipewire-0.3-dev
