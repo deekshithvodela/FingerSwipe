@@ -5,6 +5,7 @@
 
 document.addEventListener('DOMContentLoaded', () => {
   initTheme();
+  initPaletteSwitcher();
   initMobileNav();
   initDocsSidebar();
   initDocsSearch();
@@ -16,7 +17,63 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================================================
-   1. Dual-Theme Switcher (Light Default / Dark Option)
+   1. Multi-Palette Switcher (Pine & Mint Default / Velvet Burgundy Accessible Option)
+   ========================================================================= */
+function initPaletteSwitcher() {
+  const paletteToggleBtns = document.querySelectorAll('.palette-toggle-btn');
+  const segmentBtns = document.querySelectorAll('.palette-segment-btn');
+  const savedPalette = localStorage.getItem('fs_palette');
+
+  // Default is 'pine' unless explicitly set to 'burgundy'
+  const initialPalette = savedPalette === 'burgundy' ? 'burgundy' : 'pine';
+  setPalette(initialPalette);
+
+  paletteToggleBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const currentPalette = document.documentElement.getAttribute('data-palette') || 'pine';
+      const newPalette = currentPalette === 'burgundy' ? 'pine' : 'burgundy';
+      setPalette(newPalette);
+    });
+  });
+
+  segmentBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const chosen = btn.getAttribute('data-palette-choice');
+      if (chosen) {
+        setPalette(chosen);
+      }
+    });
+  });
+
+  function setPalette(palette) {
+    if (palette === 'burgundy') {
+      document.documentElement.setAttribute('data-palette', 'burgundy');
+    } else {
+      document.documentElement.setAttribute('data-palette', 'pine');
+    }
+    localStorage.setItem('fs_palette', palette);
+
+    // Update navbar buttons accessible labels and indicator
+    paletteToggleBtns.forEach(btn => {
+      const label = palette === 'burgundy'
+        ? 'Switch Color Palette (Currently Velvet Burgundy)'
+        : 'Switch Color Palette (Currently Pine & Mint)';
+      btn.setAttribute('aria-label', label);
+      btn.setAttribute('title', label);
+    });
+
+    // Update segmented radio buttons
+    segmentBtns.forEach(btn => {
+      const choice = btn.getAttribute('data-palette-choice');
+      const isActive = choice === palette;
+      btn.classList.toggle('active', isActive);
+      btn.setAttribute('aria-checked', isActive ? 'true' : 'false');
+    });
+  }
+}
+
+/* =========================================================================
+   2. Dual-Theme Switcher (Light Default / Dark Option)
    ========================================================================= */
 function initTheme() {
   const themeToggleBtns = document.querySelectorAll('.theme-toggle-btn');
