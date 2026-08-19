@@ -9,5 +9,13 @@ wheels/
 # Virtual environments
 .venv
 
+# Test & Tool Caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
 # Debian packages
 *.deb
+
+# Project state
+PROJECT_STATE.md

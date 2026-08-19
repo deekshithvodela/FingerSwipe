@@ -16,7 +16,7 @@ volume:
 brightness:
   enabled: true
   axis: horizontal
-  minimum: 0.05
+  minimum: 0.01
   maximum: 1.0
   step: 0.01
   threshold: 4.0

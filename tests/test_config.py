@@ -7,7 +7,9 @@ from fingerswipe.config import ConfigurationError, Config, load_config
 
 def test_missing_default_configuration_uses_defaults(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("XDG_CONFIG_HOME", str(tmp_path))
-    assert load_config() == Config()
+    config = load_config()
+    assert config == Config()
+    assert config.brightness.minimum == 0.01
 
 
 def test_complete_configuration_is_loaded(tmp_path: Path) -> None:

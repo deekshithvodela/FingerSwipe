@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FingerSwipe — Native 3-Finger Touchpad Volume & Brightness for Linux</title>
+  <meta name="description" content="Lightweight Linux user daemon for seamless 3-finger touchpad volume and display brightness control using PipeWire 0.3, C23 Native ABI, and zero root daemon overhead.">
+  <meta name="author" content="Deekshith Vodela">
+  <meta name="keywords" content="linux, touchpad gestures, pipewire volume control, brightness gesture, libinput, c23, wayland, x11, fingerswipe">
+
+  <!-- Canonical URL & Favicons -->
+  <link rel="canonical" href="https://deekshithvodela.github.io/FingerSwipe/">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="apple-touch-icon" href="assets/og-image-square.png">
+  <meta name="theme-color" content="#0b1617">
+
+  <!-- OpenGraph / Facebook / LinkedIn / Discord Metadata -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://deekshithvodela.github.io/FingerSwipe/">
+  <meta property="og:site_name" content="FingerSwipe">
+  <meta property="og:title" content="FingerSwipe — Native 3-Finger Touchpad Volume & Brightness for Linux">
+  <meta property="og:description" content="Zero-latency PipeWire audio volume and display brightness gestures via native C23 libinput daemon. Built for Linux desktops.">
+  <meta property="og:image" content="https://deekshithvodela.github.io/FingerSwipe/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="FingerSwipe 3-Finger Touchpad Gesture Controller for Linux">
+
+  <!-- Twitter / X Card Metadata -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FingerSwipe — Native 3-Finger Touchpad Volume & Brightness for Linux">
+  <meta name="twitter:description" content="Zero-latency PipeWire volume and display brightness gestures for Linux via C23 libinput daemon.">
+  <meta name="twitter:image" content="https://deekshithvodela.github.io/FingerSwipe/assets/og-image.png">
+
+  <!-- JSON-LD Structured Metadata -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "FingerSwipe",
+    "operatingSystem": "Linux",
+    "applicationCategory": "UtilitiesApplication",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "Deekshith Vodela",
+      "email": "deekshithvodela@gmail.com"
+    },
+    "description": "Lightweight, responsive Linux user service that controls default PipeWire sink volume and display brightness using 3-finger touchpad swipe gestures.",
+    "softwareVersion": "1.1.0",
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+
+  <!-- Anti-Flash Synchronous Theme Initialization (Light Default) -->
+  <script>
+    (function() {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    })();
+  </script>
+
+  <!-- Google Fonts: Outfit, Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="./" class="brand-logo" id="nav-brand">
+        <!-- 🤟 Refined ASL Love + Curved Swipe Arrow -->
+        <svg viewBox="0 0 48 48">
+          <path d="M7 16 C9 8 18 4 28 5" stroke="#51ba9a" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M24 2.5 L29 5.2 L25 8" fill="#51ba9a" stroke="#51ba9a" stroke-width="1" stroke-linejoin="round"/>
+          <g class="logo-hand" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M 14 27 C 11 27, 7 24.5, 6 20.5 C 5.2 17.5, 8.5 16, 11 18.5 C 12.8 20.3, 14 22, 14 22 L 14 11 C 14 8.5, 18 8.5, 18 11 L 18 21 L 21.5 21 L 21.5 17 C 21.5 15.5, 24.5 15.5, 24.5 17 L 24.5 21 L 27.5 21 L 27.5 18 C 27.5 16.5, 30.5 16.5, 30.5 18 L 30.5 21 L 31 21 L 31 12 C 31 9.5, 35 9.5, 35 12 L 35 28 C 35 34, 30 38, 23 38 C 17 38, 14 33, 14 27 Z"/>
+          </g>
+          <circle cx="8" cy="19.5" r="1.8" fill="#51ba9a"/>
+          <circle cx="16" cy="11" r="1.8" fill="#51ba9a"/>
+          <circle cx="33" cy="12" r="1.8" fill="#51ba9a"/>
+        </svg>
+        <span>FingerSwipe</span>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#features" id="link-features">Features</a></li>
+        <li><a href="#simulator" id="link-simulator">Live Simulator</a></li>
+        <li><a href="#install" id="link-install">Install & Update</a></li>
+        <li><a href="#config" id="link-config">Configuration</a></li>
+        <li><a href="docs/" id="link-docs">Documentation</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- Dual-Theme Switcher Button -->
+        <button class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle Theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener" class="github-badge" id="btn-github" title="Star FingerSwipe on GitHub">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span id="star-count">★ Star</span>
+        </a>
+
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle Navigation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <header class="hero">
+    <div class="container">
+      <div class="hero-pill">
+        <span class="pulse-dot"></span>
+        <span>PipeWire 0.3 &amp; C23 Native Architecture</span>
+      </div>
+
+      <h1 class="hero-title">Fluid Touchpad Gestures for Linux</h1>
+
+      <p class="hero-subtitle">
+        Control system volume and screen brightness instantly with natural 3-finger swipes.
+        Zero root privileges required. Universal standalone installer and Debian package.
+      </p>
+
+      <div class="hero-cta">
+        <a href="https://github.com/deekshithvodela/FingerSwipe/releases/latest" id="btn-download-deb" class="btn btn-primary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          <span>Download Debian Package (<span id="release-tag">v1.1.0</span>)</span>
+        </a>
+
+        <a href="https://github.com/deekshithvodela/FingerSwipe/releases/latest" id="btn-download-tar" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="8 17 12 21 16 17"></polyline>
+            <line x1="12" y1="12" x2="12" y2="21"></line>
+            <path d="M20.88 18.09A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.29"></path>
+          </svg>
+          <span>Universal Linux Bundle</span>
+        </a>
+
+        <a href="docs/" class="btn btn-secondary">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          <span>Documentation</span>
+        </a>
+      </div>
+
+      <div class="hero-stats">
+        <div class="hero-stat-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Zero Root Daemon</span>
+        </div>
+        <div class="hero-stat-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>1% Minimum Brightness Safety</span>
+        </div>
+        <div class="hero-stat-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>KDE Plasma &amp; FreeDesktop OSD</span>
+        </div>
+        <div class="hero-stat-item">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Wayland &amp; X11 Ready</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Interactive Gesture Simulator Section -->
+  <section class="simulator-section" id="simulator">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Interactive Preview</span>
+        <h2 class="section-title">Touchpad Gesture Simulator</h2>
+        <p class="section-desc">
+          Drag on the virtual trackpad below to test the directional gesture engine.
+          Vertical swipes adjust audio volume; horizontal swipes control screen brightness.
+        </p>
+      </div>
+
+      <div class="playground-container">
+        <!-- Interactive Trackpad Box -->
+        <div class="trackpad-box">
+          <div class="trackpad-header">
+            <span class="trackpad-header-title">Virtual 3-Finger Trackpad</span>
+            <div class="live-status-pill">
+              <span class="live-pulse-dot"></span>
+              <span>SIMULATOR ACTIVE</span>
+            </div>
+          </div>
+
+          <div class="trackpad-surface" id="trackpad-surface">
+            <div class="axis-indicator" id="axis-indicator">AXIS: IDLE</div>
+
+            <div class="trackpad-prompt" id="trackpad-prompt">
+              <!-- 🤟 Stylized Contact Gesture Icon -->
+              <svg class="trackpad-prompt-icon" viewBox="0 0 48 48">
+                <path d="M7 16 C9 8 18 4 28 5" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
+                <path d="M24 2.5 L29 5.2 L25 8" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"/>
+                <g class="logo-hand" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                  <path d="M 14 27 C 11 27, 7 24.5, 6 20.5 C 5.2 17.5, 8.5 16, 11 18.5 C 12.8 20.3, 14 22, 14 22 L 14 11 C 14 8.5, 18 8.5, 18 11 L 18 21 L 21.5 21 L 21.5 17 C 21.5 15.5, 24.5 15.5, 24.5 17 L 24.5 21 L 27.5 21 L 27.5 18 C 27.5 16.5, 30.5 16.5, 30.5 18 L 30.5 21 L 31 21 L 31 12 C 31 9.5, 35 9.5, 35 12 L 35 28 C 35 34, 30 38, 23 38 C 17 38, 14 33, 14 27 Z"/>
+                </g>
+                <circle cx="8" cy="19.5" r="1.8" fill="currentColor"/>
+                <circle cx="16" cy="11" r="1.8" fill="currentColor"/>
+                <circle cx="33" cy="12" r="1.8" fill="currentColor"/>
+              </svg>
+              <span>Click &amp; drag vertically or horizontally</span>
+            </div>
+
+            <div class="gesture-pointer" id="gesture-pointer"></div>
+          </div>
+        </div>
+
+        <!-- Live Feedback Gauges & OSD Preview -->
+        <div class="feedback-box">
+          <div class="osd-preview">
+            <span class="osd-preview-label">Desktop OSD Overlay Preview (KDE / FreeDesktop)</span>
+
+            <div class="osd-modal" id="osd-modal">
+              <div class="osd-icon" id="osd-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                  <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+              </div>
+
+              <div class="osd-bar-container">
+                <div class="osd-bar-header">
+                  <span id="osd-label">Audio Volume (PipeWire)</span>
+                  <span id="osd-val" class="osd-val-mono">65%</span>
+                </div>
+                <div class="osd-progress-bg">
+                  <div class="osd-progress-fill" id="osd-progress-fill"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="meters-grid">
+            <div class="meter-card">
+              <div class="meter-header">
+                <span>Sink Volume (↕ Vertical)</span>
+                <span class="meter-val meter-vol-accent" id="meter-vol-val">65%</span>
+              </div>
+              <div class="meter-bar-bg">
+                <div class="meter-bar-fill volume-fill" id="meter-vol-fill"></div>
+              </div>
+            </div>
+
+            <div class="meter-card">
+              <div class="meter-header">
+                <span>Display Brightness (↔ Horizontal)</span>
+                <span class="meter-val meter-bright-accent" id="meter-bright-val">80%</span>
+              </div>
+              <div class="meter-bar-bg">
+                <div class="meter-bar-fill brightness-fill" id="meter-bright-fill"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Key Architecture Features Section -->
+  <section class="features-section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Engineering Highlights</span>
+        <h2 class="section-title">Built for Modern Linux Desktops</h2>
+        <p class="section-desc">Engineered for low latency, zero daemon privilege escalation, and seamless Wayland/X11 compatibility.</p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="8" rx="2" ry="2"></rect>
+              <rect x="2" y="14" width="20" height="8" rx="2" ry="2"></rect>
+              <line x1="6" y1="6" x2="6.01" y2="6"></line>
+              <line x1="6" y1="18" x2="6.01" y2="18"></line>
+            </svg>
+          </div>
+          <h3>C23 Native Backend</h3>
+          <p>Direct low-level integration with <code>libinput</code> and <code>libudev</code> compiled with C23 standard guarantees sub-millisecond response latency.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+              <line x1="12" y1="19" x2="12" y2="23"></line>
+              <line x1="8" y1="23" x2="16" y2="23"></line>
+            </svg>
+          </div>
+          <h3>Native PipeWire 0.3</h3>
+          <p>Interfaces directly with your session's PipeWire audio server. Controls the default output sink volume with smooth linear or exponential scaling.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+          </div>
+          <h3>1% Minimum Brightness Floor</h3>
+          <p>Safeguards against total screen blackout by strictly clamping display backlight adjustments to a safe minimum of 1% (<code>0.01</code>).</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+            </svg>
+          </div>
+          <h3>Zero Root Daemon</h3>
+          <p>Runs strictly inside your unprivileged user session. Automatically managed as a standard <code>systemd --user</code> unit with udev session ACLs.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+            </svg>
+          </div>
+          <h3>Axis Locking &amp; Smoothing</h3>
+          <p>Calculates gesture vector angles and locks to the dominant axis after a configurable threshold, completely preventing accidental volume jumps while adjusting brightness.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+          </div>
+          <h3>Zero-Downtime Updates</h3>
+          <p>Supports instant in-place upgrades. Running daemons automatically reload configuration and hot-restart without terminating existing user desktop sessions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation & Update Hub -->
+  <section class="install-section" id="install">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Quickstart</span>
+        <h2 class="section-title">Installation &amp; Updates</h2>
+        <p class="section-desc">Choose the installation method suited for your Linux distribution.</p>
+      </div>
+
+      <div class="tab-container">
+        <div class="tab-nav">
+          <button class="tab-btn active" data-tab="tab-deb">Debian / Ubuntu / Mint (.deb)</button>
+          <button class="tab-btn" data-tab="tab-tar">Universal Linux Bundle (.tar.gz)</button>
+          <button class="tab-btn" data-tab="tab-source">Source Compilation</button>
+        </div>
+
+        <!-- Tab 1: Debian Package -->
+        <div class="tab-pane active" id="tab-deb">
+          <h3 class="tab-heading">Recommended for Ubuntu, Debian, Pop!_OS, Linux Mint</h3>
+          <p class="tab-subtext">Standard Debian package handling system libraries, Python virtualenv in <code>/opt/fingerswipe</code>, systemd unit, and udev rules.</p>
+
+          <div class="command-box">
+            <button class="copy-btn" id="copy-deb-cmd">Copy</button>
+            <pre><code># 1. Download and install / update .deb package
+sudo apt install ./fingerswipe_1.1.0_amd64.deb
+
+# 2. Enable &amp; start user service (first-time install only)
+systemctl --user enable --now fingerswipe.service
+
+# To update in the future, simply re-run:
+sudo apt install --reinstall ./fingerswipe_1.1.0_amd64.deb</code></pre>
+          </div>
+
+          <div class="download-cards-grid">
+            <div class="download-card">
+              <div>
+                <strong class="download-card-heading">Debian Package (.deb)</strong>
+                <span class="download-card-subtext">x86_64 / amd64 architecture</span>
+              </div>
+              <div class="download-card-meta">
+                <span id="deb-file-size">~290 KB</span>
+                <a href="https://github.com/deekshithvodela/FingerSwipe/releases/latest" class="btn btn-primary btn-download-sm">Download .deb</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Universal Linux Bundle -->
+        <div class="tab-pane" id="tab-tar">
+          <h3 class="tab-heading">Compatible with Arch Linux, Fedora, RHEL, openSUSE, Void, Alpine</h3>
+          <p class="tab-subtext">Distribution-agnostic standalone archive bundle containing compiled shared libraries, standalone installer, udev rules, and auto-update detection.</p>
+
+          <div class="command-box">
+            <button class="copy-btn" id="copy-tar-cmd">Copy</button>
+            <pre><code># 1. Extract and install
+tar -xzf fingerswipe-1.1.0-linux-x86_64.tar.gz
+cd fingerswipe-1.1.0-linux-x86_64
+sudo ./install.sh
+
+# 2. Enable &amp; start user service (first-time install only)
+systemctl --user daemon-reload
+systemctl --user enable --now fingerswipe.service
+
+# To update in the future, extract new version and run:
+sudo ./install.sh --update</code></pre>
+          </div>
+
+          <div class="download-cards-grid">
+            <div class="download-card">
+              <div>
+                <strong class="download-card-heading">Universal Archive (.tar.gz)</strong>
+                <span class="download-card-subtext">Standalone installer for all Linux distros</span>
+              </div>
+              <div class="download-card-meta">
+                <span id="tar-file-size">~35 KB</span>
+                <a href="https://github.com/deekshithvodela/FingerSwipe/releases/latest" class="btn btn-primary btn-download-sm">Download .tar.gz</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Source Build -->
+        <div class="tab-pane" id="tab-source">
+          <h3 class="tab-heading">Compile &amp; Install from Git Repository</h3>
+          <p class="tab-subtext">Requirements: CMake 3.28+, C23 compiler (GCC 14+ / Clang 18+), Python 3.13, <code>uv</code>, <code>libinput-dev</code>, <code>libudev-dev</code>, <code>libpipewire-0.3-dev</code>.</p>
+
+          <div class="command-box">
+            <button class="copy-btn" id="copy-source-cmd">Copy</button>
+            <pre><code># 1. Clone repository
+git clone https://github.com/deekshithvodela/FingerSwipe.git
+cd FingerSwipe
+
+# 2. Build C23 library &amp; Python wheel
+cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+uv build
+
+# 3. Install system-wide
+sudo cmake --install build
+sudo ldconfig
+sudo uv venv --python 3.13 /opt/fingerswipe
+sudo uv pip install --python /opt/fingerswipe/bin/python dist/*.whl
+sudo /opt/fingerswipe/bin/python install/install.py --prefix /usr
+
+# 4. Reload rules &amp; start daemon
+sudo udevadm control --reload-rules &amp;&amp; sudo udevadm trigger --subsystem-match=input
+systemctl --user daemon-reload
+systemctl --user enable --now fingerswipe.service</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Configuration Generator -->
+  <section class="config-section" id="config">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Customization</span>
+        <h2 class="section-title">Visual Configurator</h2>
+        <p class="section-desc">Tune smoothing, sensitivity curves, and axis locking thresholds. Copy the generated YAML directly into your config file.</p>
+      </div>
+
+      <div class="config-grid">
+        <div class="config-controls">
+          <div class="form-group">
+            <label class="form-label">
+              <span>Sensitivity Curve</span>
+              <span class="config-val-mono">linear (default)</span>
+            </label>
+            <select class="select-input" id="cfg-curve">
+              <option value="linear" selected>Linear (1:1 direct tracking)</option>
+              <option value="exponential">Exponential (Fine precision at low speeds)</option>
+              <option value="logarithmic">Logarithmic (Quick ramp at low speeds)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Dead Zone</span>
+              <span id="val-deadzone" class="config-val-mono">0.00</span>
+            </label>
+            <input type="range" class="range-slider" id="cfg-deadzone" min="0" max="0.5" step="0.01" value="0.0">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Smoothing (Alpha)</span>
+              <span id="val-smoothing" class="config-val-mono">1.00</span>
+            </label>
+            <input type="range" class="range-slider" id="cfg-smoothing" min="0.05" max="1.0" step="0.05" value="1.0">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Sensitivity Multiplier</span>
+              <span id="val-sensitivity" class="config-val-mono">1.00</span>
+            </label>
+            <input type="range" class="range-slider" id="cfg-sensitivity" min="0.2" max="3.0" step="0.1" value="1.0">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Axis Lock Threshold</span>
+              <span id="val-axis-lock" class="config-val-mono">2.0</span>
+            </label>
+            <input type="range" class="range-slider" id="cfg-axis-lock" min="1.0" max="5.0" step="0.2" value="2.0">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Volume Step Size</span>
+              <span id="val-vol-step" class="config-val-mono">1%</span>
+            </label>
+            <input type="range" class="range-slider" id="cfg-vol-step" min="1" max="10" step="1" value="1">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Brightness Step Size</span>
+              <span id="val-bright-step" class="config-val-mono">1%</span>
+            </label>
+            <input type="range" class="range-slider" id="cfg-bright-step" min="1" max="10" step="1" value="1">
+          </div>
+        </div>
+
+        <div class="config-preview-box">
+          <div class="config-preview-header">
+            <span class="config-preview-title">Preview: <code>~/.config/fingerswipe/config.yaml</code></span>
+            <button class="copy-btn" id="copy-yaml-btn" data-copy-target="cfg-output-yaml">Copy YAML</button>
+          </div>
+          <div class="command-box">
+            <pre><code id="cfg-output-yaml">engine:
+  dead_zone: 0.00
+  smoothing: 1.00
+  sensitivity: 1.00
+  curve: linear
+  axis_lock_threshold: 2.0
+
+volume:
+  enabled: true
+  axis: vertical
+  minimum: 0.0
+  maximum: 1.0
+  step: 0.01
+  threshold: 4.0
+
+brightness:
+  enabled: true
+  axis: horizontal
+  minimum: 0.01
+  maximum: 1.0
+  step: 0.01
+  threshold: 4.0
+
+logging:
+  level: INFO
+  json: false</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Site Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-logo-box">
+            <svg class="footer-logo-svg" viewBox="0 0 48 48">
+              <path d="M7 16 C9 8 18 4 28 5" stroke="#51ba9a" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M24 2.5 L29 5.2 L25 8" fill="#51ba9a" stroke="#51ba9a" stroke-width="1" stroke-linejoin="round"/>
+              <g class="logo-hand" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                <path d="M 14 27 C 11 27, 7 24.5, 6 20.5 C 5.2 17.5, 8.5 16, 11 18.5 C 12.8 20.3, 14 22, 14 22 L 14 11 C 14 8.5, 18 8.5, 18 11 L 18 21 L 21.5 21 L 21.5 17 C 21.5 15.5, 24.5 15.5, 24.5 17 L 24.5 21 L 27.5 21 L 27.5 18 C 27.5 16.5, 30.5 16.5, 30.5 18 L 30.5 21 L 31 21 L 31 12 C 31 9.5, 35 9.5, 35 12 L 35 28 C 35 34, 30 38, 23 38 C 17 38, 14 33, 14 27 Z"/>
+              </g>
+            </svg>
+            <span>FingerSwipe</span>
+          </div>
+          <p class="footer-about-text">
+            Native Linux three-finger gesture controller for PipeWire audio volume and display brightness. Created by <strong>Deekshith Vodela</strong>.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Documentation</h4>
+          <ul>
+            <li><a href="docs/#quickstart">Quickstart &amp; Install</a></li>
+            <li><a href="docs/#architecture">Architecture Specification</a></li>
+            <li><a href="docs/#native-abi">C23 Native ABI Reference</a></li>
+            <li><a href="docs/#configuration">Configuration Guide</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Project Links</h4>
+          <ul>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener">GitHub Repository</a></li>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe/releases" target="_blank" rel="noopener">All Releases &amp; Past Versions</a></li>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe/issues" target="_blank" rel="noopener">Report an Issue</a></li>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; 2026 Deekshith Vodela. Open source under the MIT License.</span>
+        <span>Crafted for high-performance Linux desktop workflows.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="scripts/main.js"></script>
+</body>
+</html>

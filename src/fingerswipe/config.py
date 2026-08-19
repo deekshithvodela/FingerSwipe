@@ -35,7 +35,7 @@ class VolumeConfig:
 class BrightnessConfig:
     enabled: bool = True
     axis: str = "horizontal"
-    minimum: float = 0.05
+    minimum: float = 0.01
     maximum: float = 1.0
     step: float = 0.01
     threshold: float = 4.0

@@ -1,0 +1,93 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - 'web/**'
+      - 'docs/**'
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.agents/**'
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - 'web/**'
+      - 'docs/**'
+      - '**.md'
+      - 'LICENSE'
+      - '.gitignore'
+      - '.agents/**'
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install system dependencies
+        run: |
+          # Use canonical archive mirrors with timeouts to avoid stalled Azure mirrors
+          sudo sed -i 's/azure\.archive\.ubuntu\.com/archive.ubuntu.com/g' /etc/apt/sources.list.d/ubuntu.sources 2>/dev/null || true
+          sudo sed -i 's/azure\.archive\.ubuntu\.com/archive.ubuntu.com/g' /etc/apt/sources.list 2>/dev/null || true
+          sudo apt-get update -o Acquire::Retries=3 -o Acquire::http::Timeout=15
+          sudo DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+            -o Acquire::Retries=3 -o Acquire::http::Timeout=15 \
+            libinput-dev \
+            libudev-dev \
+            libpipewire-0.3-dev
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Compile Native C Library
+        run: |
+          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
+          cmake --build build --parallel
+
+      - name: Set up Python Environment & Install Dev Dependencies
+        run: |
+          uv sync --all-groups
+
+      - name: Code Quality & Linting (Ruff)
+        run: |
+          .venv/bin/ruff check src tests install
+
+      - name: Type Checking (Mypy)
+        run: |
+          .venv/bin/mypy src tests
+
+      - name: Run Test Suite (Pytest)
+        run: |
+          .venv/bin/pytest -v --tb=short
+
+      - name: Build Python Package Wheel
+        run: |
+          uv build
+
+      - name: Verify Debian Package Build
+        run: |
+          chmod +x ./build_deb.sh
+          ./build_deb.sh
+
+      - name: Verify Universal Linux Package Build
+        run: |
+          chmod +x ./install/build_universal.sh
+          ./install/build_universal.sh

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Page Not Found | FingerSwipe</title>
+  <meta name="robots" content="noindex, follow">
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <meta name="theme-color" content="#0b1617">
+
+  <script>
+    // Smart Client-Side Legacy URL Redirects & Anti-Flash Theme Init
+    (function() {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+
+      var pathname = window.location.pathname;
+      var hash = window.location.hash || "";
+      var lower = pathname.toLowerCase();
+
+      // Normalize /docs.html or /DOCS.html -> /docs/
+      if (lower.endsWith("/docs.html") || lower.endsWith("docs.html")) {
+        var cleanDocs = pathname.replace(/docs\.html$/i, "docs/");
+        window.location.replace(cleanDocs + hash);
+      } 
+      // Normalize /index.html -> /
+      else if (lower.endsWith("/index.html") || lower.endsWith("index.html")) {
+        var cleanHome = pathname.replace(/index\.html$/i, "");
+        window.location.replace(cleanHome + hash);
+      }
+      // Normalize /docs (missing trailing slash) -> /docs/
+      else if (lower.endsWith("/docs")) {
+        window.location.replace(pathname + "/" + hash);
+      }
+    })();
+  </script>
+
+  <!-- Google Fonts: Outfit & Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="./" class="brand-logo" id="nav-brand">
+        <!-- 🤟 Refined ASL Love + Curved Swipe Arrow -->
+        <svg viewBox="0 0 48 48">
+          <path d="M7 16 C9 8 18 4 28 5" stroke="#51ba9a" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M24 2.5 L29 5.2 L25 8" fill="#51ba9a" stroke="#51ba9a" stroke-width="1" stroke-linejoin="round"/>
+          <g class="logo-hand" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M 14 27 C 11 27, 7 24.5, 6 20.5 C 5.2 17.5, 8.5 16, 11 18.5 C 12.8 20.3, 14 22, 14 22 L 14 11 C 14 8.5, 18 8.5, 18 11 L 18 21 L 21.5 21 L 21.5 17 C 21.5 15.5, 24.5 15.5, 24.5 17 L 24.5 21 L 27.5 21 L 27.5 18 C 27.5 16.5, 30.5 16.5, 30.5 18 L 30.5 21 L 31 21 L 31 12 C 31 9.5, 35 9.5, 35 12 L 35 28 C 35 34, 30 38, 23 38 C 17 38, 14 33, 14 27 Z"/>
+          </g>
+          <circle cx="8" cy="19.5" r="1.8" fill="#51ba9a"/>
+          <circle cx="16" cy="11" r="1.8" fill="#51ba9a"/>
+          <circle cx="33" cy="12" r="1.8" fill="#51ba9a"/>
+        </svg>
+        <span>FingerSwipe</span>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="./">Home</a></li>
+        <li><a href="docs/">Documentation</a></li>
+        <li><a href="https://github.com/deekshithvodela/FingerSwipe/releases" target="_blank" rel="noopener">All Releases</a></li>
+        <li><a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener">GitHub</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle Theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener" class="github-badge" id="btn-github" title="GitHub">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>★ Star</span>
+        </a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 404 Hero Card -->
+  <main class="error-hero">
+    <div class="error-card">
+      <div class="error-code">404</div>
+      <h1 class="error-title">Page Not Found</h1>
+      <p class="error-desc">
+        The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
+      </p>
+
+      <div class="error-actions">
+        <a href="./" class="btn btn-primary">Return Home</a>
+        <a href="docs/" class="btn btn-secondary">View Documentation</a>
+      </div>
+    </div>
+  </main>
+
+  <script src="scripts/main.js"></script>
+</body>
+</html>

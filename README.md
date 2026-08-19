@@ -11,6 +11,8 @@
 
 FingerSwipe is a lightweight, responsive Linux user service that controls default PipeWire sink volume and display brightness with three-finger touchpad swipes.
 
+**[Live Website & Documentation Portal](https://deekshithvodela.github.io/FingerSwipe/)**
+
 ## Requirements
 
 - CMake 3.28+ and a C23 compiler
@@ -48,44 +50,73 @@ Or, if already installed:
 fingerswipe check
 ```
 
-## Install
+## Install & Update
 
-### Method 1: Debian Package (Recommended)
+### Method 1: Debian Package (Recommended for Ubuntu / Debian / Pop!_OS / Mint)
 
-You can build and install FingerSwipe as an installable Debian package:
+You can build or download and install FingerSwipe as a standard Debian package:
 
-1. Build the `.deb` package:
+1. **Install or Update:**
    ```sh
-   ./build_deb.sh
+   # Install fresh or update an existing version:
+   sudo apt install ./fingerswipe_1.1.0_amd64.deb
    ```
-2. Install the package:
-   ```sh
-   sudo apt install ./fingerswipe_1.0.0_amd64.deb
-   ```
-3. Enable and start the systemd user service:
+2. **Enable and start the systemd user service (first-time install only):**
    ```sh
    systemctl --user enable --now fingerswipe.service
    ```
 
+*(When updating via `.deb`, the package automatically stops the running service, upgrades files, reloads systemd/udev, and restarts the service without modifying your custom configuration.)*
+
 ---
 
-### Method 2: Manual Build & Install
+### Method 2: Universal Linux Installer (Arch, Fedora, openSUSE, etc.)
 
-The native library is installed under `/usr/local`. Python is installed in an
-isolated virtual environment at the exact executable path used by systemd:
+For any modern Linux distribution with PipeWire and libinput:
+
+1. **Build or extract the universal package:**
+   ```sh
+   # Extract the release bundle
+   tar -xzf fingerswipe-1.1.0-linux-x86_64.tar.gz
+   cd fingerswipe-1.1.0-linux-x86_64
+   ```
+2. **Run the installer:**
+   ```sh
+   sudo ./install.sh
+   ```
+3. **Start the user service:**
+   ```sh
+   systemctl --user enable --now fingerswipe.service
+   ```
+
+*(To update in the future, simply re-run `sudo ./install.sh`. It automatically detects the existing install, cleanly stops the background daemon, updates binaries, and restarts the service.)*
+
+---
+
+### Method 3: Manual Build & Install from Source
 
 ```sh
 sudo cmake --install build
 sudo ldconfig
-sudo uv venv --python /usr/bin/python3.13 /opt/fingerswipe
+sudo uv venv --python 3.13 /opt/fingerswipe
 sudo uv pip install --python /opt/fingerswipe/bin/python \
-  dist/fingerswipe-1.0.0-py3-none-any.whl
+  dist/fingerswipe-1.1.0-py3-none-any.whl
 sudo /opt/fingerswipe/bin/python install/install.py --prefix /usr
 sudo udevadm control --reload-rules
 sudo udevadm trigger --subsystem-match=input
 systemctl --user daemon-reload
 systemctl --user enable --now fingerswipe.service
 ```
+
+---
+
+## Updating FingerSwipe
+
+Updating is completely seamless and **preserves your custom configuration** (`~/.config/fingerswipe/config.yaml`):
+
+- **Debian / Ubuntu (.deb):** `sudo apt install --reinstall ./fingerswipe_1.1.0_amd64.deb` (Automatically restarts the service).
+- **Universal Package:** Re-run `sudo ./install.sh` from the new release directory.
+- **Source Build:** Run `git pull`, rebuild, re-run `sudo ./install.sh` or `sudo cmake --install build`, and run `systemctl --user restart fingerswipe.service`.
 
 ---
 
@@ -142,7 +173,7 @@ volume:
 brightness:
   enabled: true           # Enable display brightness control (default: true)
   axis: horizontal        # Gesture axis ('horizontal' or 'vertical') (default: horizontal)
-  minimum: 0.05           # Minimum brightness clamp (default: 0.05)
+  minimum: 0.01           # Minimum brightness clamp (1%) (default: 0.01)
   maximum: 1.0            # Maximum brightness clamp (default: 1.0)
   step: 0.01              # Brightness step size per threshold (0.01 = 1%) (default: 0.01)
   threshold: 4.0          # Accumulated delta required to trigger a step (default: 4.0)

@@ -29,7 +29,7 @@ Version: $VERSION
 Section: sound
 Priority: optional
 Architecture: $ARCH
-Maintainer: deevodee <deekshithvodela@gmail.com>
+Maintainer: Deekshith Vodela <deekshithvodela@gmail.com>
 Depends: libinput10, libudev1, libpipewire-0.3-0, python3 (>= 3.13)
 Description: Control default PipeWire sink volume and display brightness with 3-finger touchpad swipes.
 EOF
@@ -45,7 +45,7 @@ chmod 755 "$PKG_DIR/DEBIAN/postinst" "$PKG_DIR/DEBIAN/prerm" "$PKG_DIR/DEBIAN/po
 cp -d build/lib/libfingerswipe.so* "$PKG_DIR/usr/lib/"
 
 # 6. Create virtualenv and install Python wheel
-uv venv --python /usr/bin/python3.13 "$PKG_DIR/opt/fingerswipe"
+uv venv --python 3.13 "$PKG_DIR/opt/fingerswipe"
 uv pip install --python "$PKG_DIR/opt/fingerswipe/bin/python" \
     "dist/fingerswipe-${VERSION}-py3-none-any.whl"
 

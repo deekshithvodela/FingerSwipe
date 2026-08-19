@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation &amp; Developer Manual | FingerSwipe</title>
+  <meta name="description" content="Official developer documentation for FingerSwipe: Architecture, C23 Native ABI, systemd user service setup, configuration reference, and math curves.">
+  <meta name="author" content="Deekshith Vodela">
+  <meta name="keywords" content="fingerswipe docs, linux gestures, pipewire documentation, libinput abi, c23 gestures, developer manual">
+
+  <!-- Canonical URL & Favicons -->
+  <link rel="canonical" href="https://deekshithvodela.github.io/FingerSwipe/docs/">
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <link rel="apple-touch-icon" href="../assets/og-image-square.png">
+  <meta name="theme-color" content="#0b1617">
+
+  <!-- OpenGraph / Facebook / LinkedIn / Discord Metadata -->
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://deekshithvodela.github.io/FingerSwipe/docs/">
+  <meta property="og:site_name" content="FingerSwipe Documentation">
+  <meta property="og:title" content="FingerSwipe Developer Manual &amp; Architecture Reference">
+  <meta property="og:description" content="Complete documentation on C23 Native ABI, PipeWire 0.3 integration, hardware diagnostic eligibility, configuration schema, and mathematical curves.">
+  <meta property="og:image" content="https://deekshithvodela.github.io/FingerSwipe/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="FingerSwipe Documentation Cover">
+
+  <!-- Twitter / X Card Metadata -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FingerSwipe Developer Manual &amp; Architecture Reference">
+  <meta name="twitter:description" content="Complete documentation on C23 Native ABI, PipeWire 0.3 integration, hardware diagnostics, and mathematical curves.">
+  <meta name="twitter:image" content="https://deekshithvodela.github.io/FingerSwipe/assets/og-image.png">
+
+  <!-- Anti-Flash Synchronous Theme Initialization (Light Default) -->
+  <script>
+    (function() {
+      var savedTheme = localStorage.getItem('theme');
+      if (savedTheme === 'dark') {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+      }
+    })();
+  </script>
+
+  <!-- Google Fonts: Outfit, Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../styles/main.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar" id="navbar">
+    <div class="container nav-container">
+      <a href="../" class="brand-logo" id="nav-brand">
+        <!-- 🤟 Refined ASL Love + Curved Swipe Arrow -->
+        <svg viewBox="0 0 48 48">
+          <path d="M7 16 C9 8 18 4 28 5" stroke="#51ba9a" stroke-width="2.5" stroke-linecap="round"/>
+          <path d="M24 2.5 L29 5.2 L25 8" fill="#51ba9a" stroke="#51ba9a" stroke-width="1" stroke-linejoin="round"/>
+          <g class="logo-hand" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+            <path d="M 14 27 C 11 27, 7 24.5, 6 20.5 C 5.2 17.5, 8.5 16, 11 18.5 C 12.8 20.3, 14 22, 14 22 L 14 11 C 14 8.5, 18 8.5, 18 11 L 18 21 L 21.5 21 L 21.5 17 C 21.5 15.5, 24.5 15.5, 24.5 17 L 24.5 21 L 27.5 21 L 27.5 18 C 27.5 16.5, 30.5 16.5, 30.5 18 L 30.5 21 L 31 21 L 31 12 C 31 9.5, 35 9.5, 35 12 L 35 28 C 35 34, 30 38, 23 38 C 17 38, 14 33, 14 27 Z"/>
+          </g>
+          <circle cx="8" cy="19.5" r="1.8" fill="#51ba9a"/>
+          <circle cx="16" cy="11" r="1.8" fill="#51ba9a"/>
+          <circle cx="33" cy="12" r="1.8" fill="#51ba9a"/>
+        </svg>
+        <span>FingerSwipe <span class="docs-brand-badge">Docs</span></span>
+      </a>
+
+      <ul class="nav-links" id="nav-links">
+        <li><a href="../">Overview</a></li>
+        <li><a href="../#simulator">Live Simulator</a></li>
+        <li><a href="../#install">Downloads</a></li>
+        <li><a href="./" class="active">Documentation</a></li>
+      </ul>
+
+      <div class="nav-actions">
+        <!-- Dual-Theme Switcher Button -->
+        <button class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle Theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+          </svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </button>
+
+        <a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener" class="github-badge" id="btn-github" title="Star on GitHub">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span id="star-count">★ Star</span>
+        </a>
+
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Toggle Navigation">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Mobile Docs Drawer Header Bar -->
+  <div class="mobile-docs-bar">
+    <button class="mobile-docs-btn" id="mobile-docs-btn">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+      <span>Table of Contents</span>
+    </button>
+    <span class="version-pill-mono">v1.1.0</span>
+  </div>
+
+  <div class="docs-overlay" id="docs-overlay"></div>
+
+  <!-- Documentation Portal Layout -->
+  <div class="container docs-wrapper">
+    <!-- High-Contrast Sticky Sidebar -->
+    <aside class="docs-sidebar" id="docs-sidebar">
+      <div class="docs-search-box">
+        <svg class="docs-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input type="text" class="docs-search-input" id="docs-search-input" placeholder="Search documentation...">
+      </div>
+
+      <div class="docs-nav-group">
+        <div class="docs-nav-title">Getting Started</div>
+        <ul class="docs-nav-list">
+          <li><a href="#quickstart" class="docs-nav-link active">1. Quickstart &amp; Install</a></li>
+          <li><a href="#eligibility" class="docs-nav-link">2. Hardware Diagnostics</a></li>
+          <li><a href="#updating" class="docs-nav-link">3. Updating In-Place</a></li>
+        </ul>
+      </div>
+
+      <div class="docs-nav-group">
+        <div class="docs-nav-title">Architecture &amp; Code</div>
+        <ul class="docs-nav-list">
+          <li><a href="#architecture" class="docs-nav-link">4. System Architecture</a></li>
+          <li><a href="#native-abi" class="docs-nav-link">5. C23 Native ABI</a></li>
+          <li><a href="#configuration" class="docs-nav-link">6. Configuration &amp; Curves</a></li>
+          <li><a href="#cli-reference" class="docs-nav-link">7. CLI Reference</a></li>
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Documentation Content -->
+    <main class="docs-content">
+      <div class="docs-breadcrumbs">
+        <a href="../">FingerSwipe</a>
+        <span>/</span>
+        <span>Documentation</span>
+        <span>/</span>
+        <span>v1.1.0</span>
+      </div>
+
+      <article class="docs-article">
+        <h1>FingerSwipe Documentation</h1>
+        <p class="docs-lead">
+          Comprehensive technical reference and developer documentation for the FingerSwipe gesture daemon, C23 Native ABI, PipeWire sink volume controller, and backlight brightness engine.
+        </p>
+
+        <!-- Section 1: Quickstart & Installation -->
+        <section class="docs-section" id="quickstart">
+          <h2>1. Quickstart &amp; Installation</h2>
+          <p>FingerSwipe runs as an unprivileged user daemon with direct device access granted through standard <code>udev</code> session tags (<code>uaccess</code>).</p>
+
+          <h3>Debian / Ubuntu Installation</h3>
+          <div class="command-box">
+            <button class="copy-btn">Copy</button>
+            <pre><code># Install deb package
+sudo apt install ./fingerswipe_1.1.0_amd64.deb
+
+# Enable and start user daemon
+systemctl --user daemon-reload
+systemctl --user enable --now fingerswipe.service</code></pre>
+          </div>
+
+          <h3>Universal Linux Installation (Arch / Fedora / openSUSE / Void)</h3>
+          <div class="command-box">
+            <button class="copy-btn">Copy</button>
+            <pre><code>tar -xzf fingerswipe-1.1.0-linux-x86_64.tar.gz
+cd fingerswipe-1.1.0-linux-x86_64
+sudo ./install.sh
+
+systemctl --user daemon-reload
+systemctl --user enable --now fingerswipe.service</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 2: Hardware Eligibility Diagnostic -->
+        <section class="docs-section" id="eligibility">
+          <h2>2. Hardware Eligibility Diagnostic</h2>
+          <p>Run the built-in diagnostic tool to verify that your touchpad supports multi-finger gesture events via <code>libinput</code>:</p>
+
+          <div class="command-box">
+            <button class="copy-btn">Copy</button>
+            <pre><code>fingerswipe --check-hardware</code></pre>
+          </div>
+
+          <div class="docs-callout docs-callout-info">
+            <strong>Diagnostic Check Details:</strong>
+            <ul class="callout-list">
+              <li><strong>Touchpad Presence:</strong> Queries <code>udev</code> for devices with <code>ID_INPUT_TOUCHPAD=1</code>.</li>
+              <li><strong>Gesture Capabilities:</strong> Verifies <code>LIBINPUT_DEVICE_CAP_GESTURE</code> is reported by the kernel driver.</li>
+              <li><strong>PipeWire Server:</strong> Checks communication with default audio output sink.</li>
+              <li><strong>Display Backlight:</strong> Verifies write permissions to <code>/sys/class/backlight</code>.</li>
+            </ul>
+          </div>
+        </section>
+
+        <!-- Section 3: Updating In-Place -->
+        <section class="docs-section" id="updating">
+          <h2>3. Seamless In-Place Updates</h2>
+          <p>Upgrades are zero-downtime. FingerSwipe gracefully reloads configurations and restarts without terminating your active desktop session.</p>
+
+          <div class="command-box">
+            <button class="copy-btn">Copy</button>
+            <pre><code># Debian / Ubuntu update
+sudo apt install --reinstall ./fingerswipe_1.1.0_amd64.deb
+
+# Universal installer update
+sudo ./install.sh --update</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 4: System Architecture & Boundaries -->
+        <section class="docs-section" id="architecture">
+          <h2>4. System Architecture &amp; Boundaries</h2>
+          <p>FingerSwipe is structured into two cleanly separated layers: a lightweight C23 native gesture capture backend and a high-level policy engine written in Python 3.13.</p>
+
+          <div class="docs-table-container">
+            <table class="docs-table">
+              <thead>
+                <tr>
+                  <th>Component</th>
+                  <th>Layer</th>
+                  <th>Technology</th>
+                  <th>Responsibility</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>libfingerswipe_native.so</code></td>
+                  <td>Native ABI</td>
+                  <td>C23, libinput, libudev</td>
+                  <td>Kernel gesture stream monitoring, 3-finger swipe detection, sub-ms event callbacks.</td>
+                </tr>
+                <tr>
+                  <td><code>fingerswipe.controller</code></td>
+                  <td>Controller</td>
+                  <td>Python 3.13, ctypes</td>
+                  <td>PipeWire volume control, 1% minimum brightness floor, KDE Plasma OSD feedback.</td>
+                </tr>
+                <tr>
+                  <td><code>fingerswipe.router</code></td>
+                  <td>Router</td>
+                  <td>Python 3.13</td>
+                  <td>Directional axis locking, delta vector filtering, curve smoothing.</td>
+                </tr>
+                <tr>
+                  <td><code>fingerswipe.service</code></td>
+                  <td>Service</td>
+                  <td>systemd --user</td>
+                  <td>Session lifecycle management, hot-reload, unprivileged operation.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Section 5: C23 Native ABI Reference -->
+        <section class="docs-section" id="native-abi">
+          <h2>5. C23 Native ABI Reference</h2>
+          <p>Exported C ABI declarations defined in <code>native/include/fingerswipe.h</code>:</p>
+
+          <div class="command-box">
+            <button class="copy-btn">Copy</button>
+            <pre><code>#pragma once
+
+typedef struct fingerswipe_handle fingerswipe_handle;
+
+typedef enum {
+    FINGERSWIPE_EVENT_GESTURE_BEGIN = 0,
+    FINGERSWIPE_EVENT_GESTURE_UPDATE = 1,
+    FINGERSWIPE_EVENT_GESTURE_END = 2,
+} fingerswipe_event_type_t;
+
+typedef struct {
+    fingerswipe_event_type_t type;
+    int finger_count;
+    double dx;
+    double dy;
+    uint64_t timestamp_us;
+} fingerswipe_event_t;
+
+typedef void (*fingerswipe_callback_t)(const fingerswipe_event_t* event, void* user_data);
+
+fingerswipe_handle* fingerswipe_create(void);
+int fingerswipe_start(fingerswipe_handle* handle, fingerswipe_callback_t cb, void* user_data);
+void fingerswipe_stop(fingerswipe_handle* handle);
+void fingerswipe_destroy(fingerswipe_handle* handle);</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 6: Configuration & Mathematical Curves -->
+        <section class="docs-section" id="configuration">
+          <h2>6. Configuration &amp; Mathematical Curves</h2>
+          <p>Config file path: <code>~/.config/fingerswipe/config.yaml</code>.</p>
+
+          <h3>Supported Sensitivity Curves</h3>
+          <ul>
+            <li><strong>Linear:</strong> <code>f(x) = sensitivity * x</code> (1:1 motion tracking).</li>
+            <li><strong>Exponential:</strong> <code>f(x) = sgn(x) * |x|^1.4 * sensitivity</code> (High precision at slow speeds).</li>
+            <li><strong>Logarithmic:</strong> <code>f(x) = sgn(x) * ln(1 + |x|) * sensitivity</code> (Rapid initial response).</li>
+          </ul>
+
+          <div class="command-box">
+            <button class="copy-btn">Copy</button>
+            <pre><code>engine:
+  dead_zone: 0.00
+  smoothing: 1.00
+  sensitivity: 1.00
+  curve: linear
+  axis_lock_threshold: 2.0
+
+volume:
+  enabled: true
+  axis: vertical
+  minimum: 0.0
+  maximum: 1.0
+  step: 0.01
+  threshold: 4.0
+
+brightness:
+  enabled: true
+  axis: horizontal
+  minimum: 0.01
+  maximum: 1.0
+  step: 0.01
+  threshold: 4.0
+
+logging:
+  level: INFO
+  json: false</code></pre>
+          </div>
+        </section>
+
+        <!-- Section 7: CLI Reference -->
+        <section class="docs-section" id="cli-reference">
+          <h2>7. CLI Reference</h2>
+          <p>The <code>fingerswipe</code> command-line executable provides daemon controls and real-time event debugging:</p>
+
+          <div class="command-box">
+            <button class="copy-btn">Copy</button>
+            <pre><code># Start the user daemon in foreground (for testing/logs)
+fingerswipe --foreground
+
+# Validate configuration syntax
+fingerswipe --check-config
+
+# Run hardware &amp; environment diagnostic
+fingerswipe --check-hardware
+
+# Live gesture event monitor
+fingerswipe --monitor</code></pre>
+          </div>
+        </section>
+      </article>
+    </main>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <div class="brand-logo footer-logo-box">
+            <svg class="footer-logo-svg" viewBox="0 0 48 48">
+              <path d="M7 16 C9 8 18 4 28 5" stroke="#51ba9a" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M24 2.5 L29 5.2 L25 8" fill="#51ba9a" stroke="#51ba9a" stroke-width="1" stroke-linejoin="round"/>
+              <g class="logo-hand" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+                <path d="M 14 27 C 11 27, 7 24.5, 6 20.5 C 5.2 17.5, 8.5 16, 11 18.5 C 12.8 20.3, 14 22, 14 22 L 14 11 C 14 8.5, 18 8.5, 18 11 L 18 21 L 21.5 21 L 21.5 17 C 21.5 15.5, 24.5 15.5, 24.5 17 L 24.5 21 L 27.5 21 L 27.5 18 C 27.5 16.5, 30.5 16.5, 30.5 18 L 30.5 21 L 31 21 L 31 12 C 31 9.5, 35 9.5, 35 12 L 35 28 C 35 34, 30 38, 23 38 C 17 38, 14 33, 14 27 Z"/>
+              </g>
+            </svg>
+            <span>FingerSwipe</span>
+          </div>
+          <p class="footer-about-text">
+            Native Linux three-finger gesture controller for PipeWire audio volume and display brightness. Created by <strong>Deekshith Vodela</strong>.
+          </p>
+        </div>
+
+        <div class="footer-col">
+          <h4>Navigation</h4>
+          <ul>
+            <li><a href="../">Overview</a></li>
+            <li><a href="../#simulator">Live Simulator</a></li>
+            <li><a href="../#install">Installation Guide</a></li>
+            <li><a href="../#config">Visual Configurator</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Project</h4>
+          <ul>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener">GitHub Repository</a></li>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe/releases" target="_blank" rel="noopener">All Releases &amp; Past Versions</a></li>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe/issues" target="_blank" rel="noopener">Report Issue</a></li>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <span>&copy; 2026 Deekshith Vodela. Open source under the MIT License.</span>
+        <span>Crafted for high-performance Linux desktop workflows.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../scripts/main.js"></script>
+</body>
+</html>

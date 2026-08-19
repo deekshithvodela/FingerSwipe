@@ -110,7 +110,8 @@ static void apply_brightness(FSBrightness *b, double val) {
         snprintf(cmd, sizeof(cmd),
             "busctl --user call org.kde.ScreenBrightness /org/kde/Solid/PowerManagement/Actions/BrightnessControl org.kde.Solid.PowerManagement.Actions.BrightnessControl setBrightness i %d >/dev/null 2>&1",
             pulse_val);
-        (void)system(cmd);
+        int res = system(cmd);
+        (void)res;
     }
 
     snprintf(cmd, sizeof(cmd),
@@ -145,7 +146,8 @@ static void apply_brightness(FSBrightness *b, double val) {
 
     // 4. Fallback to brightnessctl if installed
     snprintf(cmd, sizeof(cmd), "brightnessctl s %.1f%% >/dev/null 2>&1", val * 100.0);
-    (void)system(cmd);
+    int res = system(cmd);
+    (void)res;
 }
 
 static void *brightness_worker_thread(void *arg) {

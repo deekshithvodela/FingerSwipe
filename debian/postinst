@@ -3,6 +3,13 @@ set -e
 
 if [ "$1" = "configure" ]; then
     ldconfig
+    # Ensure virtualenv python points to system python3 on target machine
+    SYS_PY=$(command -v python3.13 || command -v python3 || true)
+    if [ -n "$SYS_PY" ] && [ -d "/opt/fingerswipe/bin" ]; then
+        ln -sf "$SYS_PY" /opt/fingerswipe/bin/python
+        ln -sf python /opt/fingerswipe/bin/python3
+        ln -sf python /opt/fingerswipe/bin/python3.13
+    fi
     # Reload udev rules and trigger for input subsystem
     if [ -x "$(command -v udevadm)" ]; then
         udevadm control --reload-rules || true

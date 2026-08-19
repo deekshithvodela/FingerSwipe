@@ -60,12 +60,14 @@ static void *audio_worker_thread(void *arg) {
         if (do_vol) {
             char cmd[128];
             snprintf(cmd, sizeof(cmd), "wpctl set-volume @DEFAULT_AUDIO_SINK@ %.4f 2>/dev/null", vol);
-            (void)system(cmd);
+            int res = system(cmd);
+            (void)res;
         }
         if (do_mute) {
             char cmd[128];
             snprintf(cmd, sizeof(cmd), "wpctl set-mute @DEFAULT_AUDIO_SINK@ %d 2>/dev/null", mute ? 1 : 0);
-            (void)system(cmd);
+            int res = system(cmd);
+            (void)res;
         }
     }
     
