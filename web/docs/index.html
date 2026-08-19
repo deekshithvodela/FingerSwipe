@@ -43,17 +43,19 @@
     })();
   </script>
 
-  <!-- Google Fonts: Outfit, Inter & JetBrains Mono -->
+  <!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
   <link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
+  <!-- Accessibility Skip Navigation Link -->
+  <a href="#main-content" class="skip-link">Skip to Content</a>
 
   <!-- Navigation Bar -->
-  <nav class="navbar" id="navbar">
+  <nav class="navbar" id="navbar" aria-label="Main Navigation">
     <div class="container nav-container">
       <a href="../" class="brand-logo" id="nav-brand">
         <!-- 🤟 Refined ASL Love + Curved Swipe Arrow -->
@@ -132,7 +134,7 @@
   <!-- Documentation Portal Layout -->
   <div class="container docs-wrapper">
     <!-- High-Contrast Sticky Sidebar -->
-    <aside class="docs-sidebar" id="docs-sidebar">
+    <aside class="docs-sidebar" id="docs-sidebar" aria-label="Documentation Navigation">
       <div class="docs-search-box">
         <svg class="docs-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="11" cy="11" r="8"></circle>
@@ -387,18 +389,39 @@ fingerswipe --monitor</code></pre>
     </main>
   </div>
 
-  <!-- Site Footer -->
-  <footer class="footer">
+  <!-- Pre-Footer Newsletter CTA Banner -->
+  <section class="newsletter-cta-section" aria-label="Newsletter Subscription">
     <div class="container">
+      <div class="newsletter-cta-card">
+        <div class="newsletter-cta-content">
+          <h3 class="newsletter-cta-title">Subscribe to Deekshith Vodela's newsletter</h3>
+          <p class="newsletter-cta-subtext">Get the latest articles, releases, and updates delivered straight to your inbox.</p>
+        </div>
+        <form action="https://deekshithvodela.substack.com/subscribe" method="get" target="_blank" rel="noopener" class="newsletter-cta-form">
+          <div class="newsletter-cta-group">
+            <input type="email" name="email" placeholder="Enter your email" required aria-label="Email address for Deekshith Vodela's newsletter" class="newsletter-cta-input">
+            <button type="submit" class="newsletter-cta-btn">Subscribe</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- Site Footer -->
+  <footer class="footer" role="contentinfo">
+    <div class="container footer-container">
       <div class="footer-grid">
-        <div class="footer-col">
+        <div class="footer-about">
           <div class="brand-logo footer-logo-box">
-            <svg class="footer-logo-svg" viewBox="0 0 48 48">
+            <svg class="footer-logo-svg" viewBox="0 0 48 48" aria-hidden="true">
               <path d="M7 16 C9 8 18 4 28 5" stroke="#51ba9a" stroke-width="2.5" stroke-linecap="round"/>
               <path d="M24 2.5 L29 5.2 L25 8" fill="#51ba9a" stroke="#51ba9a" stroke-width="1" stroke-linejoin="round"/>
               <g class="logo-hand" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
                 <path d="M 14 27 C 11 27, 7 24.5, 6 20.5 C 5.2 17.5, 8.5 16, 11 18.5 C 12.8 20.3, 14 22, 14 22 L 14 11 C 14 8.5, 18 8.5, 18 11 L 18 21 L 21.5 21 L 21.5 17 C 21.5 15.5, 24.5 15.5, 24.5 17 L 24.5 21 L 27.5 21 L 27.5 18 C 27.5 16.5, 30.5 16.5, 30.5 18 L 30.5 21 L 31 21 L 31 12 C 31 9.5, 35 9.5, 35 12 L 35 28 C 35 34, 30 38, 23 38 C 17 38, 14 33, 14 27 Z"/>
               </g>
+              <circle cx="8" cy="19.5" r="1.8" fill="#51ba9a"/>
+              <circle cx="16" cy="11" r="1.8" fill="#51ba9a"/>
+              <circle cx="33" cy="12" r="1.8" fill="#51ba9a"/>
             </svg>
             <span>FingerSwipe</span>
           </div>
@@ -414,23 +437,33 @@ fingerswipe --monitor</code></pre>
             <li><a href="../#simulator">Live Simulator</a></li>
             <li><a href="../#install">Installation Guide</a></li>
             <li><a href="../#config">Visual Configurator</a></li>
+            <li><a href="./" class="active">Documentation</a></li>
           </ul>
         </div>
 
         <div class="footer-col">
-          <h4>Project</h4>
+          <h4>Legal &amp; Privacy</h4>
+          <ul>
+            <li><a href="../privacy/">Privacy Policy</a></li>
+            <li><a href="../disclaimer/">Disclaimer &amp; Liability</a></li>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h4>Project &amp; Dev</h4>
           <ul>
             <li><a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener">GitHub Repository</a></li>
-            <li><a href="https://github.com/deekshithvodela/FingerSwipe/releases" target="_blank" rel="noopener">All Releases &amp; Past Versions</a></li>
+            <li><a href="https://github.com/deekshithvodela/FingerSwipe/releases" target="_blank" rel="noopener">All Releases</a></li>
             <li><a href="https://github.com/deekshithvodela/FingerSwipe/issues" target="_blank" rel="noopener">Report Issue</a></li>
-            <li><a href="https://github.com/deekshithvodela/FingerSwipe/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
+            <li><a href="https://deekshithvodela.substack.com/" target="_blank" rel="noopener">Substack Newsletter</a></li>
+            <li><a href="https://github.com/deekshithvodela" target="_blank" rel="noopener">Deekshith Vodela</a></li>
           </ul>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <span>&copy; 2026 Deekshith Vodela. Open source under the MIT License.</span>
-        <span>Crafted for high-performance Linux desktop workflows.</span>
+        <span>© 2026 Deekshith Vodela. Released under the MIT License.</span>
       </div>
     </div>
   </footer>

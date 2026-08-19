@@ -3,13 +3,21 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>404 — Page Not Found | FingerSwipe</title>
-  <meta name="robots" content="noindex, follow">
-  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
-  <meta name="theme-color" content="#0b1617">
+  <title>Privacy Policy — FingerSwipe</title>
+  <meta name="description" content="Privacy Policy for FingerSwipe: 100% local, zero telemetry, zero analytics, zero data collection.">
+  <link rel="canonical" href="https://deekshithvodela.github.io/FingerSwipe/privacy/">
+  <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <meta name="theme-color" content="#f2f8f6">
+
+  <!-- OpenGraph / Social Metadata -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://deekshithvodela.github.io/FingerSwipe/privacy/">
+  <meta property="og:title" content="Privacy Policy — FingerSwipe">
+  <meta property="og:description" content="FingerSwipe is 100% offline and privacy-first. Zero telemetry, zero analytics, zero data collection.">
+  <meta property="og:image" content="https://deekshithvodela.github.io/FingerSwipe/assets/og-image.png">
 
   <script>
-    // Smart Client-Side Legacy URL Redirects & Anti-Flash Theme Init
+    // Anti-Flash Theme Init
     (function() {
       var savedTheme = localStorage.getItem('theme');
       if (savedTheme === 'dark') {
@@ -17,34 +25,15 @@
       } else {
         document.documentElement.removeAttribute('data-theme');
       }
-
-      var pathname = window.location.pathname;
-      var hash = window.location.hash || "";
-      var lower = pathname.toLowerCase();
-
-      // Normalize /docs.html or /DOCS.html -> /docs/
-      if (lower.endsWith("/docs.html") || lower.endsWith("docs.html")) {
-        var cleanDocs = pathname.replace(/docs\.html$/i, "docs/");
-        window.location.replace(cleanDocs + hash);
-      } 
-      // Normalize /index.html -> /
-      else if (lower.endsWith("/index.html") || lower.endsWith("index.html")) {
-        var cleanHome = pathname.replace(/index\.html$/i, "");
-        window.location.replace(cleanHome + hash);
-      }
-      // Normalize /docs (missing trailing slash) -> /docs/
-      else if (lower.endsWith("/docs")) {
-        window.location.replace(pathname + "/" + hash);
-      }
     })();
   </script>
 
-  <!-- Google Fonts: Plus Jakarta Sans, Inter & JetBrains Mono -->
+  <!-- Google Fonts: Plus Jakarta Sans, Inter, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="../styles/main.css">
 </head>
 <body>
   <!-- Accessibility Skip Navigation Link -->
@@ -53,9 +42,9 @@
   <!-- Navigation Bar -->
   <nav class="navbar" id="navbar" aria-label="Main Navigation">
     <div class="container nav-container">
-      <a href="./" class="brand-logo" id="nav-brand">
-        <!-- 🤟 Refined ASL Love + Curved Swipe Arrow -->
-        <svg viewBox="0 0 48 48">
+      <a href="../" class="brand-logo" id="nav-brand">
+        <!-- 🤟 ASL Love + Curved Swipe Arrow -->
+        <svg viewBox="0 0 48 48" aria-hidden="true">
           <path d="M7 16 C9 8 18 4 28 5" stroke="#51ba9a" stroke-width="2.5" stroke-linecap="round"/>
           <path d="M24 2.5 L29 5.2 L25 8" fill="#51ba9a" stroke="#51ba9a" stroke-width="1" stroke-linejoin="round"/>
           <g class="logo-hand" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
@@ -69,18 +58,18 @@
       </a>
 
       <ul class="nav-links" id="nav-links">
-        <li><a href="./">Home</a></li>
-        <li><a href="docs/">Documentation</a></li>
-        <li><a href="https://github.com/deekshithvodela/FingerSwipe/releases" target="_blank" rel="noopener">All Releases</a></li>
+        <li><a href="../">Home</a></li>
+        <li><a href="../docs/">Documentation</a></li>
+        <li><a href="https://github.com/deekshithvodela/FingerSwipe/releases" target="_blank" rel="noopener">Releases</a></li>
         <li><a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener">GitHub</a></li>
       </ul>
 
       <div class="nav-actions">
-        <button class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle Theme">
-          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <button class="theme-toggle-btn" id="theme-toggle-btn" aria-label="Toggle Dark and Light Mode" title="Toggle Theme">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
           </svg>
-          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="12" cy="12" r="5"></circle>
             <line x1="12" y1="1" x2="12" y2="3"></line>
             <line x1="12" y1="21" x2="12" y2="23"></line>
@@ -93,28 +82,84 @@
           </svg>
         </button>
 
-        <a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener" class="github-badge" id="btn-github" title="GitHub">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+        <a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener" class="github-badge" id="btn-github" title="View Source on GitHub">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
             <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
           </svg>
           <span>★ Star</span>
         </a>
+
+        <button class="mobile-nav-toggle" id="mobile-nav-toggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="nav-links">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
       </div>
     </div>
   </nav>
 
-  <!-- 404 Hero Card -->
-  <main id="main-content" class="error-hero">
-    <div class="error-card">
-      <div class="error-code">404</div>
-      <h1 class="error-title">Page Not Found</h1>
-      <p class="error-desc">
-        The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
-      </p>
+  <!-- Legal Main Content -->
+  <main id="main-content" class="legal-main">
+    <div class="legal-container">
+      <div class="legal-card">
+        <div class="legal-header">
+          <div class="legal-badge">PRIVACY &amp; DATA POLICY</div>
+          <h1 class="legal-title">Privacy Policy</h1>
+          <div class="legal-meta">Last Updated: August 2026 • Effective Immediately</div>
+        </div>
 
-      <div class="error-actions">
-        <a href="./" class="btn btn-primary">Return Home</a>
-        <a href="docs/" class="btn btn-secondary">View Documentation</a>
+        <div class="legal-highlight-box">
+          <strong>Summary:</strong> FingerSwipe is an open-source, 100% offline Linux utility. It does not collect, store, transmit, or share any personal information, telemetry, logs, or analytics.
+        </div>
+
+        <div class="legal-section">
+          <h2>1. 100% Local &amp; Offline Operation</h2>
+          <p>
+            FingerSwipe is engineered to execute strictly as a local background user daemon on your Linux workstation. It listens to touchpad multi-finger swipe events directly via standard kernel <code>libinput</code> APIs and adjusts local audio sinks or display brightness.
+          </p>
+          <p>
+            The software contains zero network communication code, zero HTTP clients, and zero cloud synchronization routines.
+          </p>
+        </div>
+
+        <div class="legal-section">
+          <h2>2. Zero Data Collection &amp; Zero Telemetry</h2>
+          <p>
+            We believe privacy is a fundamental human right. Under no circumstances does FingerSwipe collect:
+          </p>
+          <ul>
+            <li>No personal identification data (names, emails, IP addresses).</li>
+            <li>No keystrokes, touchpad raw coordinates, or cursor recordings.</li>
+            <li>No device identifiers, hardware serials, or MAC addresses.</li>
+            <li>No usage telemetry, feature metrics, or crash diagnostics.</li>
+          </ul>
+        </div>
+
+        <div class="legal-section">
+          <h2>3. Local Configuration Storage</h2>
+          <p>
+            Any user customization (such as gesture thresholds, sensitivity curves, or step sizes) is stored locally on your own filesystem at <code>~/.config/fingerswipe/config.yaml</code>. This file is entirely under your control and never leaves your machine.
+          </p>
+        </div>
+
+        <div class="legal-section">
+          <h2>4. Website &amp; Documentation Portal</h2>
+          <p>
+            This showcase portal is hosted statically via GitHub Pages. The site uses zero third-party analytics trackers, zero advertising cookies, and zero fingerprinting scripts. Local theme preferences (Light or Dark mode) are stored locally in your browser's <code>localStorage</code>.
+          </p>
+        </div>
+
+        <div class="legal-section">
+          <h2>5. Open Source Verification</h2>
+          <p>
+            FingerSwipe is 100% open source under the MIT License. Anyone can audit the complete codebase, build scripts, and native C binaries on GitHub:
+          </p>
+          <p>
+            <a href="https://github.com/deekshithvodela/FingerSwipe" target="_blank" rel="noopener">https://github.com/deekshithvodela/FingerSwipe</a>
+          </p>
+        </div>
       </div>
     </div>
   </main>
@@ -137,13 +182,13 @@
     </div>
   </section>
 
-  <!-- Site Footer -->
+  <!-- Shared Footer -->
   <footer class="footer" role="contentinfo">
     <div class="container footer-container">
       <div class="footer-grid">
         <div class="footer-about">
-          <div class="brand-logo footer-logo-box">
-            <svg class="footer-logo-svg" viewBox="0 0 48 48" aria-hidden="true">
+          <div class="footer-brand">
+            <svg viewBox="0 0 48 48" width="28" height="28" aria-hidden="true">
               <path d="M7 16 C9 8 18 4 28 5" stroke="#51ba9a" stroke-width="2.5" stroke-linecap="round"/>
               <path d="M24 2.5 L29 5.2 L25 8" fill="#51ba9a" stroke="#51ba9a" stroke-width="1" stroke-linejoin="round"/>
               <g class="logo-hand" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
@@ -163,8 +208,8 @@
         <div class="footer-col">
           <h4>Navigation</h4>
           <ul>
-            <li><a href="./">Overview</a></li>
-            <li><a href="docs/">Documentation</a></li>
+            <li><a href="../">Home</a></li>
+            <li><a href="../docs/">Documentation</a></li>
             <li><a href="https://github.com/deekshithvodela/FingerSwipe/releases" target="_blank" rel="noopener">Releases</a></li>
           </ul>
         </div>
@@ -172,8 +217,8 @@
         <div class="footer-col">
           <h4>Legal &amp; Privacy</h4>
           <ul>
-            <li><a href="privacy/">Privacy Policy</a></li>
-            <li><a href="disclaimer/">Disclaimer &amp; Liability</a></li>
+            <li><a href="../privacy/">Privacy Policy</a></li>
+            <li><a href="../disclaimer/">Disclaimer &amp; Liability</a></li>
             <li><a href="https://github.com/deekshithvodela/FingerSwipe/blob/main/LICENSE" target="_blank" rel="noopener">MIT License</a></li>
           </ul>
         </div>
@@ -196,6 +241,6 @@
     </div>
   </footer>
 
-  <script src="scripts/main.js"></script>
+  <script src="../scripts/main.js"></script>
 </body>
 </html>

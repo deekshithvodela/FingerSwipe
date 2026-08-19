@@ -327,6 +327,47 @@ function initGestureSimulator() {
   surface.addEventListener('pointerup', handleEnd);
   surface.addEventListener('pointercancel', handleEnd);
 
+  // Accessibility: Keyboard Arrow Controls
+  surface.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      currentVolume = Math.min(1.0, currentVolume + 0.05);
+      if (axisIndicator) {
+        axisIndicator.textContent = 'KEYBOARD: VERTICAL [VOLUME +]';
+        axisIndicator.style.color = 'var(--accent-primary)';
+      }
+      triggerOSD('volume', currentVolume);
+      updateMeters();
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      currentVolume = Math.max(0.0, currentVolume - 0.05);
+      if (axisIndicator) {
+        axisIndicator.textContent = 'KEYBOARD: VERTICAL [VOLUME -]';
+        axisIndicator.style.color = 'var(--accent-primary)';
+      }
+      triggerOSD('volume', currentVolume);
+      updateMeters();
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      currentBrightness = Math.min(1.0, currentBrightness + 0.05);
+      if (axisIndicator) {
+        axisIndicator.textContent = 'KEYBOARD: HORIZONTAL [BRIGHTNESS +]';
+        axisIndicator.style.color = 'var(--accent-amber)';
+      }
+      triggerOSD('brightness', currentBrightness);
+      updateMeters();
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      currentBrightness = Math.max(0.01, currentBrightness - 0.05);
+      if (axisIndicator) {
+        axisIndicator.textContent = 'KEYBOARD: HORIZONTAL [BRIGHTNESS -]';
+        axisIndicator.style.color = 'var(--accent-amber)';
+      }
+      triggerOSD('brightness', currentBrightness);
+      updateMeters();
+    }
+  });
+
   updateMeters();
 }
 
