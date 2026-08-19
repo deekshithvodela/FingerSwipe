@@ -27,6 +27,8 @@
       var savedPalette = localStorage.getItem('fs_palette');
       if (savedPalette === 'burgundy') {
         document.documentElement.setAttribute('data-palette', 'burgundy');
+      } else if (savedPalette === 'ocean') {
+        document.documentElement.setAttribute('data-palette', 'ocean');
       } else {
         document.documentElement.setAttribute('data-palette', 'pine');
       }
@@ -71,10 +73,13 @@
           <span class="nav-drawer-palette-title">Color Palette</span>
           <div class="palette-segmented-control" role="radiogroup" aria-label="Color Palette Selection">
             <button class="palette-segment-btn active" data-palette-choice="pine" role="radio" aria-checked="true">
-              <span class="swatch-dot swatch-pine"></span> Pine &amp; Mint
+              <span class="swatch-dot swatch-pine"></span> Pine
+            </button>
+            <button class="palette-segment-btn" data-palette-choice="ocean" role="radio" aria-checked="false">
+              <span class="swatch-dot swatch-ocean"></span> Ocean
             </button>
             <button class="palette-segment-btn" data-palette-choice="burgundy" role="radio" aria-checked="false">
-              <span class="swatch-dot swatch-burgundy"></span> Velvet Burgundy
+              <span class="swatch-dot swatch-burgundy"></span> Velvet
             </button>
           </div>
         </li>
@@ -82,7 +87,7 @@
 
       <div class="nav-actions">
         <!-- Multi-Palette Switcher Button -->
-        <button class="palette-toggle-btn" id="palette-toggle-btn" aria-label="Switch Color Palette (Currently Pine &amp; Mint)" title="Switch Color Palette: Pine &amp; Mint / Velvet Burgundy">
+        <button class="palette-toggle-btn" id="palette-toggle-btn" aria-label="Switch Color Palette (Currently Pine &amp; Mint)" title="Switch Color Palette: Pine &amp; Mint / Ocean Cyan / Velvet Burgundy">
           <svg class="icon-palette" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle>
             <circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle>

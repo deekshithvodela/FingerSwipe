@@ -3,13 +3,6 @@ import io
 import cairosvg
 from PIL import Image, ImageDraw, ImageFont
 
-SVG_PATH = "web/assets/logo.svg"
-
-# Palette: Pine & Mint & Pine Obsidian
-# Canvas: #0b1617 (11, 22, 23) -> #152d30 (21, 45, 48)
-# Accents: #51ba9a (81, 186, 154), #3ea183 (62, 161, 131), #176966 (23, 105, 102)
-# Text: #f0fdf9 (240, 253, 249), #cbdad5 (203, 218, 213), #7f9f97 (127, 159, 151)
-
 def find_font(bold=False, size=32):
     candidates_bold = [
         "/usr/share/fonts/truetype/quicksand/Quicksand-Bold.ttf",
@@ -30,195 +23,221 @@ def find_font(bold=False, size=32):
                 pass
     return ImageFont.load_default()
 
-# =========================================================================
-# 1. 1200x630 Wide OpenGraph Banner (Rendered at 2400x1260 for Crisp 2x HiDPI)
-# =========================================================================
+THEMES = {
+    "pine": {
+        "svg": "web/assets/logo.svg",
+        "bg_top": (11, 22, 23),
+        "bg_bottom": (21, 45, 48),
+        "glow_color": (81, 186, 154),
+        "border_color": (81, 186, 154, 60),
+        "pill_fill": (23, 105, 102, 230),
+        "pill_border": (81, 186, 154, 220),
+        "pill_text": (240, 253, 249, 255),
+        "title_text": (240, 253, 249, 255),
+        "sub_text": (203, 218, 213, 255),
+        "badge_fill": (21, 45, 48, 240),
+        "badge_border": (81, 186, 154, 75),
+        "badge_text": (240, 253, 249, 255),
+        "author_text": (127, 159, 151, 255),
+        "out_wide": "web/assets/og-image.png",
+        "out_sq": "web/assets/og-image-square.png",
+    },
+    "ocean": {
+        "svg": "web/assets/logo-ocean.svg",
+        "bg_top": (8, 16, 24),
+        "bg_bottom": (16, 33, 51),
+        "glow_color": (56, 189, 248),
+        "border_color": (56, 189, 248, 60),
+        "pill_fill": (2, 132, 199, 230),
+        "pill_border": (56, 189, 248, 220),
+        "pill_text": (240, 249, 255, 255),
+        "title_text": (240, 249, 255, 255),
+        "sub_text": (186, 230, 253, 255),
+        "badge_fill": (16, 33, 51, 240),
+        "badge_border": (56, 189, 248, 75),
+        "badge_text": (240, 249, 255, 255),
+        "author_text": (112, 164, 196, 255),
+        "out_wide": "web/assets/og-image-ocean.png",
+        "out_sq": "web/assets/og-image-ocean-square.png",
+    },
+    "burgundy": {
+        "svg": "web/assets/logo-burgundy.svg",
+        "bg_top": (20, 2, 5),
+        "bg_bottom": (40, 5, 12),
+        "glow_color": (224, 122, 143),
+        "border_color": (224, 122, 143, 60),
+        "pill_fill": (120, 16, 40, 230),
+        "pill_border": (224, 122, 143, 220),
+        "pill_text": (253, 242, 244, 255),
+        "title_text": (253, 242, 244, 255),
+        "sub_text": (226, 189, 197, 255),
+        "badge_fill": (40, 5, 12, 240),
+        "badge_border": (224, 122, 143, 75),
+        "badge_text": (253, 242, 244, 255),
+        "author_text": (168, 125, 134, 255),
+        "out_wide": "web/assets/og-image-burgundy.png",
+        "out_sq": "web/assets/og-image-burgundy-square.png",
+    },
+}
+
 SCALE = 2
-W_WIDE = 1200 * SCALE
-H_WIDE = 630 * SCALE
 
-base_wide = Image.new("RGBA", (W_WIDE, H_WIDE), (11, 22, 23, 255))
-draw_base_wide = ImageDraw.Draw(base_wide)
+def render_wide(theme_cfg):
+    W = 1200 * SCALE
+    H = 630 * SCALE
 
-# Smooth vertical Pine Obsidian gradient
-for y in range(H_WIDE):
-    factor = y / H_WIDE
-    r = int(11 + 10 * factor)
-    g = int(22 + 23 * factor)
-    b = int(23 + 25 * factor)
-    draw_base_wide.line([(0, y), (W_WIDE, y)], fill=(r, g, b, 255))
+    base = Image.new("RGBA", (W, H), (*theme_cfg["bg_top"], 255))
+    draw_base = ImageDraw.Draw(base)
 
-# Soft luminous radial Mint Jade glow behind logo
-glow_layer_wide = Image.new("RGBA", (W_WIDE, H_WIDE), (0, 0, 0, 0))
-draw_glow_wide = ImageDraw.Draw(glow_layer_wide)
-glow_cx, glow_cy = 270 * SCALE, 315 * SCALE
-for radius in range(240 * SCALE, 0, -4):
-    alpha = int(48 * (1 - (radius / (240 * SCALE))**2))
-    draw_glow_wide.ellipse(
-        [glow_cx - radius, glow_cy - radius, glow_cx + radius, glow_cy + radius],
-        fill=(81, 186, 154, alpha)
+    r1, g1, b1 = theme_cfg["bg_top"]
+    r2, g2, b2 = theme_cfg["bg_bottom"]
+    for y in range(H):
+        f = y / H
+        r = int(r1 + (r2 - r1) * f)
+        g = int(g1 + (g2 - g1) * f)
+        b = int(b1 + (b2 - b1) * f)
+        draw_base.line([(0, y), (W, y)], fill=(r, g, b, 255))
+
+    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw_glow = ImageDraw.Draw(glow)
+    gcx, gcy = 270 * SCALE, 315 * SCALE
+    gr, gg, gb = theme_cfg["glow_color"]
+    for radius in range(240 * SCALE, 0, -4):
+        alpha = int(48 * (1 - (radius / (240 * SCALE))**2))
+        draw_glow.ellipse([gcx - radius, gcy - radius, gcx + radius, gcy + radius], fill=(gr, gg, gb, alpha))
+
+    comp = Image.alpha_composite(base, glow)
+    draw = ImageDraw.Draw(comp)
+
+    draw.rounded_rectangle(
+        [36 * SCALE, 36 * SCALE, W - 36 * SCALE, H - 36 * SCALE],
+        radius=24 * SCALE,
+        outline=theme_cfg["border_color"],
+        width=2 * SCALE
     )
 
-comp_wide = Image.alpha_composite(base_wide, glow_layer_wide)
-draw_wide = ImageDraw.Draw(comp_wide)
+    logo_size = 290 * SCALE
+    png_bytes = cairosvg.svg2png(url=theme_cfg["svg"], output_width=logo_size, output_height=logo_size)
+    logo_img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+    comp.paste(logo_img, (120 * SCALE, 170 * SCALE), logo_img)
 
-# Outer and Inner Glass Borders
-draw_wide.rounded_rectangle(
-    [36 * SCALE, 36 * SCALE, W_WIDE - 36 * SCALE, H_WIDE - 36 * SCALE],
-    radius=24 * SCALE,
-    outline=(81, 186, 154, 60),
-    width=2 * SCALE
-)
+    draw = ImageDraw.Draw(comp)
+    font_pill = find_font(bold=True, size=15 * SCALE)
+    font_title = find_font(bold=True, size=54 * SCALE)
+    font_sub = find_font(bold=False, size=24 * SCALE)
+    font_badge = find_font(bold=True, size=16 * SCALE)
+    font_author = find_font(bold=False, size=18 * SCALE)
 
-# Rasterize actual logo.svg at 2x resolution
-logo_size_wide = 290 * SCALE
-png_bytes_wide = cairosvg.svg2png(url=SVG_PATH, output_width=logo_size_wide, output_height=logo_size_wide)
-logo_img_wide = Image.open(io.BytesIO(png_bytes_wide)).convert("RGBA")
-comp_wide.paste(logo_img_wide, (120 * SCALE, 170 * SCALE), logo_img_wide)
+    pill_text = "v1.1.0 RELEASE"
+    p_bbox = draw.textbbox((0, 0), pill_text, font=font_pill)
+    pw = p_bbox[2] - p_bbox[0]
+    px1, py1 = 440 * SCALE, 135 * SCALE
+    px2, py2 = px1 + pw + 32 * SCALE, py1 + 34 * SCALE
+    draw.rounded_rectangle([px1, py1, px2, py2], radius=17 * SCALE, fill=theme_cfg["pill_fill"], outline=theme_cfg["pill_border"], width=2 * SCALE)
+    draw.text((px1 + 16 * SCALE, py1 + 7 * SCALE), pill_text, fill=theme_cfg["pill_text"], font=font_pill)
 
-# Typography
-draw_wide = ImageDraw.Draw(comp_wide)
-font_pill_wide = find_font(bold=True, size=15 * SCALE)
-font_title_wide = find_font(bold=True, size=54 * SCALE)
-font_sub_wide = find_font(bold=False, size=24 * SCALE)
-font_badge_wide = find_font(bold=True, size=16 * SCALE)
-font_author_wide = find_font(bold=False, size=18 * SCALE)
-
-# Version Pill Tag
-pill_text = "v1.1.0 RELEASE"
-p_bbox = draw_wide.textbbox((0, 0), pill_text, font=font_pill_wide)
-p_w = p_bbox[2] - p_bbox[0]
-p_x1, p_y1 = 440 * SCALE, 135 * SCALE
-p_x2, p_y2 = p_x1 + p_w + 32 * SCALE, p_y1 + 34 * SCALE
-draw_wide.rounded_rectangle([p_x1, p_y1, p_x2, p_y2], radius=17 * SCALE, fill=(23, 105, 102, 230), outline=(81, 186, 154, 220), width=2 * SCALE)
-draw_wide.text((p_x1 + 16 * SCALE, p_y1 + 7 * SCALE), pill_text, fill=(240, 253, 249, 255), font=font_pill_wide)
-
-# Title
-draw_wide.text((440 * SCALE, 185 * SCALE), "FingerSwipe", fill=(240, 253, 249, 255), font=font_title_wide)
-
-# Subtitle
-draw_wide.text(
-    (440 * SCALE, 275 * SCALE),
-    "Fluid Touchpad Gestures for Linux\nVolume & Display Brightness Daemon",
-    fill=(203, 218, 213, 255),
-    font=font_sub_wide,
-    spacing=10 * SCALE
-)
-
-# Badges
-badges = ["PipeWire 0.3", "C23 Native ABI", "Zero Root", "KDE OSD"]
-bx = 440 * SCALE
-by = 385 * SCALE
-for b in badges:
-    bbox = draw_wide.textbbox((0, 0), b, font=font_badge_wide)
-    bw = bbox[2] - bbox[0] + 28 * SCALE
-    draw_wide.rounded_rectangle([bx, by, bx + bw, by + 36 * SCALE], radius=8 * SCALE, fill=(21, 45, 48, 240), outline=(81, 186, 154, 75), width=int(1.5 * SCALE))
-    draw_wide.text((bx + 14 * SCALE, by + 8 * SCALE), b, fill=(240, 253, 249, 255), font=font_badge_wide)
-    bx += bw + 12 * SCALE
-
-# Author Line
-draw_wide.text((440 * SCALE, 465 * SCALE), "by Deekshith Vodela  •  MIT License", fill=(127, 159, 151, 255), font=font_author_wide)
-
-# Downscale to exact 1200x630 with high-quality Lanczos antialiasing
-final_wide = comp_wide.resize((1200, 630), Image.Resampling.LANCZOS).convert("RGB")
-os.makedirs("web/assets", exist_ok=True)
-final_wide.save("web/assets/og-image.png", "PNG", optimize=True)
-print(f"Saved Pine & Mint web/assets/og-image.png (1200x630, {os.path.getsize('web/assets/og-image.png') // 1024} KB)")
-
-
-# =========================================================================
-# 2. 800x800 Square Social Card (Rendered at 1600x1600 for Crisp 2x HiDPI)
-# =========================================================================
-W_SQ = 800 * SCALE
-H_SQ = 800 * SCALE
-
-base_sq = Image.new("RGBA", (W_SQ, H_SQ), (11, 22, 23, 255))
-draw_base_sq = ImageDraw.Draw(base_sq)
-
-# Pine Obsidian Gradient
-for y in range(H_SQ):
-    factor = y / H_SQ
-    r = int(11 + 10 * factor)
-    g = int(22 + 23 * factor)
-    b = int(23 + 25 * factor)
-    draw_base_sq.line([(0, y), (W_SQ, y)], fill=(r, g, b, 255))
-
-# Soft Center Glow
-glow_layer_sq = Image.new("RGBA", (W_SQ, H_SQ), (0, 0, 0, 0))
-draw_glow_sq = ImageDraw.Draw(glow_layer_sq)
-glow_cx_sq, glow_cy_sq = 400 * SCALE, 260 * SCALE
-for radius in range(270 * SCALE, 0, -4):
-    alpha = int(52 * (1 - (radius / (270 * SCALE))**2))
-    draw_glow_sq.ellipse(
-        [glow_cx_sq - radius, glow_cy_sq - radius, glow_cx_sq + radius, glow_cy_sq + radius],
-        fill=(81, 186, 154, alpha)
+    draw.text((440 * SCALE, 185 * SCALE), "FingerSwipe", fill=theme_cfg["title_text"], font=font_title)
+    draw.text(
+        (440 * SCALE, 275 * SCALE),
+        "Fluid Touchpad Gestures for Linux\nVolume & Display Brightness Daemon",
+        fill=theme_cfg["sub_text"],
+        font=font_sub,
+        spacing=10 * SCALE
     )
 
-comp_sq = Image.alpha_composite(base_sq, glow_layer_sq)
-draw_sq = ImageDraw.Draw(comp_sq)
+    badges = ["PipeWire 0.3", "C23 Native ABI", "Zero Root", "KDE OSD"]
+    bx = 440 * SCALE
+    by = 385 * SCALE
+    for b in badges:
+        bbox = draw.textbbox((0, 0), b, font=font_badge)
+        bw = bbox[2] - bbox[0] + 28 * SCALE
+        draw.rounded_rectangle([bx, by, bx + bw, by + 36 * SCALE], radius=8 * SCALE, fill=theme_cfg["badge_fill"], outline=theme_cfg["badge_border"], width=int(1.5 * SCALE))
+        draw.text((bx + 14 * SCALE, by + 8 * SCALE), b, fill=theme_cfg["badge_text"], font=font_badge)
+        bx += bw + 12 * SCALE
 
-# Inner Glass Border
-draw_sq.rounded_rectangle(
-    [30 * SCALE, 30 * SCALE, W_SQ - 30 * SCALE, H_SQ - 30 * SCALE],
-    radius=24 * SCALE,
-    outline=(81, 186, 154, 60),
-    width=2 * SCALE
-)
+    draw.text((440 * SCALE, 465 * SCALE), "by Deekshith Vodela  •  MIT License", fill=theme_cfg["author_text"], font=font_author)
 
-# Rasterize Logo at 2x
-logo_size_sq = 290 * SCALE
-png_bytes_sq = cairosvg.svg2png(url=SVG_PATH, output_width=logo_size_sq, output_height=logo_size_sq)
-logo_img_sq = Image.open(io.BytesIO(png_bytes_sq)).convert("RGBA")
-comp_sq.paste(logo_img_sq, ((W_SQ - logo_size_sq) // 2, 110 * SCALE), logo_img_sq)
+    final = comp.resize((1200, 630), Image.Resampling.LANCZOS).convert("RGB")
+    final.save(theme_cfg["out_wide"], "PNG", optimize=True)
+    print(f"Saved {theme_cfg['out_wide']} (1200x630, {os.path.getsize(theme_cfg['out_wide']) // 1024} KB)")
 
-# Typography for Square Card
-draw_sq = ImageDraw.Draw(comp_sq)
-font_pill_sq = find_font(bold=True, size=15 * SCALE)
-font_title_sq = find_font(bold=True, size=52 * SCALE)
-font_sub_sq = find_font(bold=False, size=23 * SCALE)
-font_badge_sq = find_font(bold=True, size=16 * SCALE)
-font_author_sq = find_font(bold=False, size=18 * SCALE)
+def render_square(theme_cfg):
+    W = 800 * SCALE
+    H = 800 * SCALE
 
-# Pill Tag (Centered)
-pill_text_sq = "v1.1.0 RELEASE"
-p_bbox_sq = draw_sq.textbbox((0, 0), pill_text_sq, font=font_pill_sq)
-pw_sq = p_bbox_sq[2] - p_bbox_sq[0]
-px1_sq = (W_SQ - (pw_sq + 32 * SCALE)) // 2
-py1_sq = 435 * SCALE
-draw_sq.rounded_rectangle(
-    [px1_sq, py1_sq, px1_sq + pw_sq + 32 * SCALE, py1_sq + 34 * SCALE],
-    radius=17 * SCALE,
-    fill=(23, 105, 102, 230),
-    outline=(81, 186, 154, 220),
-    width=2 * SCALE
-)
-draw_sq.text((px1_sq + 16 * SCALE, py1_sq + 7 * SCALE), pill_text_sq, fill=(240, 253, 249, 255), font=font_pill_sq)
+    base = Image.new("RGBA", (W, H), (*theme_cfg["bg_top"], 255))
+    draw_base = ImageDraw.Draw(base)
 
-# Title (Centered)
-title_text = "FingerSwipe"
-t_bbox = draw_sq.textbbox((0, 0), title_text, font=font_title_sq)
-t_w = t_bbox[2] - t_bbox[0]
-draw_sq.text(((W_SQ - t_w) // 2, 495 * SCALE), title_text, fill=(240, 253, 249, 255), font=font_title_sq)
+    r1, g1, b1 = theme_cfg["bg_top"]
+    r2, g2, b2 = theme_cfg["bg_bottom"]
+    for y in range(H):
+        f = y / H
+        r = int(r1 + (r2 - r1) * f)
+        g = int(g1 + (g2 - g1) * f)
+        b = int(b1 + (b2 - b1) * f)
+        draw_base.line([(0, y), (W, y)], fill=(r, g, b, 255))
 
-# Subtitle (Centered)
-sub_text = "Linux 3-Finger Gesture Daemon"
-s_bbox = draw_sq.textbbox((0, 0), sub_text, font=font_sub_sq)
-s_w = s_bbox[2] - s_bbox[0]
-draw_sq.text(((W_SQ - s_w) // 2, 575 * SCALE), sub_text, fill=(203, 218, 213, 255), font=font_sub_sq)
+    glow = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    draw_glow = ImageDraw.Draw(glow)
+    gcx, gcy = 400 * SCALE, 260 * SCALE
+    gr, gg, gb = theme_cfg["glow_color"]
+    for radius in range(270 * SCALE, 0, -4):
+        alpha = int(52 * (1 - (radius / (270 * SCALE))**2))
+        draw_glow.ellipse([gcx - radius, gcy - radius, gcx + radius, gcy + radius], fill=(gr, gg, gb, alpha))
 
-# Badges (Centered)
-sq_badges = "PipeWire 0.3  •  C23 ABI  •  Zero Root"
-b_bbox = draw_sq.textbbox((0, 0), sq_badges, font=font_badge_sq)
-b_w = b_bbox[2] - b_bbox[0]
-draw_sq.text(((W_SQ - b_w) // 2, 635 * SCALE), sq_badges, fill=(240, 253, 249, 255), font=font_badge_sq)
+    comp = Image.alpha_composite(base, glow)
+    draw = ImageDraw.Draw(comp)
 
-# Author (Centered)
-auth_text = "by Deekshith Vodela  •  MIT License"
-a_bbox = draw_sq.textbbox((0, 0), auth_text, font=font_author_sq)
-a_w = a_bbox[2] - a_bbox[0]
-draw_sq.text(((W_SQ - a_w) // 2, 700 * SCALE), auth_text, fill=(127, 159, 151, 255), font=font_author_sq)
+    draw.rounded_rectangle(
+        [30 * SCALE, 30 * SCALE, W - 30 * SCALE, H - 30 * SCALE],
+        radius=24 * SCALE,
+        outline=theme_cfg["border_color"],
+        width=2 * SCALE
+    )
 
-# Downscale to exact 800x800 with high-quality Lanczos antialiasing
-final_sq = comp_sq.resize((800, 800), Image.Resampling.LANCZOS).convert("RGB")
-final_sq.save("web/assets/og-image-square.png", "PNG", optimize=True)
-print(f"Saved Pine & Mint web/assets/og-image-square.png (800x800, {os.path.getsize('web/assets/og-image-square.png') // 1024} KB)")
+    logo_size = 290 * SCALE
+    png_bytes = cairosvg.svg2png(url=theme_cfg["svg"], output_width=logo_size, output_height=logo_size)
+    logo_img = Image.open(io.BytesIO(png_bytes)).convert("RGBA")
+    comp.paste(logo_img, ((W - logo_size) // 2, 110 * SCALE), logo_img)
+
+    draw = ImageDraw.Draw(comp)
+    font_pill = find_font(bold=True, size=15 * SCALE)
+    font_title = find_font(bold=True, size=52 * SCALE)
+    font_sub = find_font(bold=False, size=23 * SCALE)
+    font_badge = find_font(bold=True, size=16 * SCALE)
+    font_author = find_font(bold=False, size=18 * SCALE)
+
+    pill_text = "v1.1.0 RELEASE"
+    p_bbox = draw.textbbox((0, 0), pill_text, font=font_pill)
+    pw = p_bbox[2] - p_bbox[0]
+    px1 = (W - (pw + 32 * SCALE)) // 2
+    py1 = 435 * SCALE
+    draw.rounded_rectangle([px1, py1, px1 + pw + 32 * SCALE, py1 + 34 * SCALE], radius=17 * SCALE, fill=theme_cfg["pill_fill"], outline=theme_cfg["pill_border"], width=2 * SCALE)
+    draw.text((px1 + 16 * SCALE, py1 + 7 * SCALE), pill_text, fill=theme_cfg["pill_text"], font=font_pill)
+
+    title_text = "FingerSwipe"
+    t_bbox = draw.textbbox((0, 0), title_text, font=font_title)
+    draw.text(((W - (t_bbox[2] - t_bbox[0])) // 2, 495 * SCALE), title_text, fill=theme_cfg["title_text"], font=font_title)
+
+    sub_text = "Linux 3-Finger Gesture Daemon"
+    s_bbox = draw.textbbox((0, 0), sub_text, font=font_sub)
+    draw.text(((W - (s_bbox[2] - s_bbox[0])) // 2, 575 * SCALE), sub_text, fill=theme_cfg["sub_text"], font=font_sub)
+
+    sq_badges = "PipeWire 0.3  •  C23 ABI  •  Zero Root"
+    b_bbox = draw.textbbox((0, 0), sq_badges, font=font_badge)
+    draw.text(((W - (b_bbox[2] - b_bbox[0])) // 2, 635 * SCALE), sq_badges, fill=theme_cfg["badge_text"], font=font_badge)
+
+    auth_text = "by Deekshith Vodela  •  MIT License"
+    a_bbox = draw.textbbox((0, 0), auth_text, font=font_author)
+    draw.text(((W - (a_bbox[2] - a_bbox[0])) // 2, 700 * SCALE), auth_text, fill=theme_cfg["author_text"], font=font_author)
+
+    final = comp.resize((800, 800), Image.Resampling.LANCZOS).convert("RGB")
+    final.save(theme_cfg["out_sq"], "PNG", optimize=True)
+    print(f"Saved {theme_cfg['out_sq']} (800x800, {os.path.getsize(theme_cfg['out_sq']) // 1024} KB)")
+
+if __name__ == "__main__":
+    os.makedirs("web/assets", exist_ok=True)
+    for theme_name, cfg in THEMES.items():
+        print(f"Generating OpenGraph images for {theme_name.upper()}...")
+        render_wide(cfg)
+        render_square(cfg)

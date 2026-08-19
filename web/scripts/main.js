@@ -17,29 +17,32 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* =========================================================================
-   1. Multi-Palette Switcher (Pine & Mint Default / Velvet Burgundy Accessible Option)
+   1. Multi-Palette Switcher (Pine & Mint, Ocean Cyan, Velvet Burgundy)
    ========================================================================= */
 function initPaletteSwitcher() {
   const paletteToggleBtns = document.querySelectorAll('.palette-toggle-btn');
   const segmentBtns = document.querySelectorAll('.palette-segment-btn');
   const savedPalette = localStorage.getItem('fs_palette');
+  const paletteCycle = ['pine', 'ocean', 'burgundy'];
 
-  // Default is 'pine' unless explicitly set to 'burgundy'
-  const initialPalette = savedPalette === 'burgundy' ? 'burgundy' : 'pine';
+  // Default is 'pine' unless explicitly set to another valid choice
+  const initialPalette = paletteCycle.includes(savedPalette) ? savedPalette : 'pine';
   setPalette(initialPalette);
 
   paletteToggleBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const currentPalette = document.documentElement.getAttribute('data-palette') || 'pine';
-      const newPalette = currentPalette === 'burgundy' ? 'pine' : 'burgundy';
-      setPalette(newPalette);
+      const currentIndex = paletteCycle.indexOf(currentPalette);
+      const nextIndex = (currentIndex + 1) % paletteCycle.length;
+      const nextPalette = paletteCycle[nextIndex >= 0 ? nextIndex : 0];
+      setPalette(nextPalette);
     });
   });
 
   segmentBtns.forEach(btn => {
     btn.addEventListener('click', () => {
       const chosen = btn.getAttribute('data-palette-choice');
-      if (chosen) {
+      if (chosen && paletteCycle.includes(chosen)) {
         setPalette(chosen);
       }
     });
@@ -48,6 +51,8 @@ function initPaletteSwitcher() {
   function setPalette(palette) {
     if (palette === 'burgundy') {
       document.documentElement.setAttribute('data-palette', 'burgundy');
+    } else if (palette === 'ocean') {
+      document.documentElement.setAttribute('data-palette', 'ocean');
     } else {
       document.documentElement.setAttribute('data-palette', 'pine');
     }
@@ -55,9 +60,10 @@ function initPaletteSwitcher() {
 
     // Update navbar buttons accessible labels and indicator
     paletteToggleBtns.forEach(btn => {
-      const label = palette === 'burgundy'
-        ? 'Switch Color Palette (Currently Velvet Burgundy)'
-        : 'Switch Color Palette (Currently Pine & Mint)';
+      let name = 'Pine & Mint';
+      if (palette === 'ocean') name = 'Ocean Cyan';
+      if (palette === 'burgundy') name = 'Velvet Burgundy';
+      const label = `Switch Color Palette (Currently ${name})`;
       btn.setAttribute('aria-label', label);
       btn.setAttribute('title', label);
     });
@@ -132,24 +138,36 @@ function initDocsSidebar() {
   const docsSidebar = document.getElementById('docs-sidebar');
   const docsOverlay = document.getElementById('docs-overlay');
 
+  function setDrawerOpen(isOpen) {
+    if (docsSidebar) docsSidebar.classList.toggle('open', isOpen);
+    if (docsOverlay) docsOverlay.classList.toggle('open', isOpen);
+    document.body.classList.toggle('scroll-locked', isOpen);
+    document.documentElement.classList.toggle('scroll-locked', isOpen);
+  }
+
   if (mobileDocsBtn && docsSidebar) {
     mobileDocsBtn.addEventListener('click', () => {
-      docsSidebar.classList.toggle('open');
-      if (docsOverlay) docsOverlay.classList.toggle('open');
+      const isOpen = !docsSidebar.classList.contains('open');
+      setDrawerOpen(isOpen);
     });
 
     if (docsOverlay) {
       docsOverlay.addEventListener('click', () => {
-        docsSidebar.classList.remove('open');
-        docsOverlay.classList.remove('open');
+        setDrawerOpen(false);
       });
     }
 
     docsSidebar.querySelectorAll('.docs-nav-link').forEach(link => {
       link.addEventListener('click', () => {
-        docsSidebar.classList.remove('open');
-        if (docsOverlay) docsOverlay.classList.remove('open');
+        setDrawerOpen(false);
       });
+    });
+
+    // Auto-unlock if resized to desktop mode
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 860) {
+        setDrawerOpen(false);
+      }
     });
   }
 

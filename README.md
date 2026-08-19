@@ -1,7 +1,7 @@
 # FingerSwipe
 
 <p align="center">
-  <a href="https://github.com/deekshithvodela/FingerSwipe"><img src="https://img.shields.io/badge/version-v1.1.0-blue.svg?style=for-the-badge&logo=git" alt="Version"></a>
+  <a href="https://github.com/deekshithvodela/FingerSwipe/releases"><img src="https://img.shields.io/badge/version-v1.1.0-blue.svg?style=for-the-badge&logo=git" alt="Version"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-green.svg?style=for-the-badge" alt="License"></a>
   <a href="https://kernel.org"><img src="https://img.shields.io/badge/platform-Linux-orange.svg?style=for-the-badge&logo=linux&logoColor=white" alt="Platform"></a>
   <a href="https://python.org"><img src="https://img.shields.io/badge/python-3.13+-3776AB.svg?style=for-the-badge&logo=python&logoColor=white" alt="Python"></a>
@@ -11,7 +11,7 @@
 
 FingerSwipe is a lightweight, responsive Linux user service that controls default PipeWire sink volume and display brightness with three-finger touchpad swipes.
 
-**[Live Website & Documentation Portal](https://deekshithvodela.github.io/FingerSwipe/)**
+**[Live Website & Documentation Portal](https://deekshithvodela.github.io/FingerSwipe/)**  •  **[GitHub Releases & Downloads](https://github.com/deekshithvodela/FingerSwipe/releases)**
 
 ## Requirements
 
@@ -52,9 +52,11 @@ fingerswipe check
 
 ## Install & Update
 
+Pre-built binaries, universal packages, and checksums are available for download on [GitHub Releases](https://github.com/deekshithvodela/FingerSwipe/releases).
+
 ### Method 1: Debian Package (Recommended for Ubuntu / Debian / Pop!_OS / Mint)
 
-You can build or download and install FingerSwipe as a standard Debian package:
+Download `fingerswipe_1.1.0_amd64.deb` from [Releases](https://github.com/deekshithvodela/FingerSwipe/releases/latest) or build locally:
 
 1. **Install or Update:**
    ```sh
@@ -72,9 +74,9 @@ You can build or download and install FingerSwipe as a standard Debian package:
 
 ### Method 2: Universal Linux Installer (Arch, Fedora, openSUSE, etc.)
 
-For any modern Linux distribution with PipeWire and libinput:
+Download `fingerswipe-1.1.0-linux-x86_64.tar.gz` from [Releases](https://github.com/deekshithvodela/FingerSwipe/releases/latest) or build locally:
 
-1. **Build or extract the universal package:**
+1. **Extract the universal package:**
    ```sh
    # Extract the release bundle
    tar -xzf fingerswipe-1.1.0-linux-x86_64.tar.gz
