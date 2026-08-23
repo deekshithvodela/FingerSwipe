@@ -45,11 +45,15 @@ jobs:
         run: |
           chmod +x ./build_deb.sh
           ./build_deb.sh
-
       - name: Build Universal Linux Package (.tar.gz)
         run: |
           chmod +x ./install/build_universal.sh
           ./install/build_universal.sh
+
+      - name: Generate APT Repository Files
+        run: |
+          chmod +x ./scripts/publish_apt_repo.sh
+          ./scripts/publish_apt_repo.sh
 
       - name: Generate Checksums
         run: |
@@ -65,8 +69,9 @@ jobs:
         uses: softprops/action-gh-release@v2
         if: startsWith(github.ref, 'refs/tags/')
         with:
+          name: ${{ github.ref_name }} — 4-Finger Tap Target Application Launcher & Zero-Shift Configurator
+          body_path: docs/release-notes-v1.2.0.md
           files: |
             release-artifacts/*
-          generate_release_notes: true
           draft: false
           prerelease: false

@@ -1,11 +1,14 @@
 Source: fingerswipe
-Section: sound
+Section: utils
 Priority: optional
 Maintainer: Deekshith Vodela <deekshithvodela@gmail.com>
 Build-Depends: debhelper (>= 10), cmake, pkg-config, libinput-dev, libudev-dev, libpipewire-0.3-dev
-Standards-Version: 3.9.8
+Standards-Version: 4.6.2
+Homepage: https://deekshithvodela.github.io/FingerSwipe/
 
 Package: fingerswipe
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, python3 (>= 3.13)
-Description: Control default PipeWire sink volume with 3-finger vertical touchpad swipes.
+Depends: ${shlibs:Depends}, ${misc:Depends}, python3 (>= 3.12), python3-gi, gir1.2-gtk-3.0
+Description: Fluid Touchpad Gestures for Linux
+ Lightweight Linux user service controlling PipeWire sink volume and display
+ brightness with 3-finger swipes, and launching Start Menu via 4-finger tap.

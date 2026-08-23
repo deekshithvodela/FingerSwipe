@@ -42,6 +42,15 @@ class BrightnessConfig:
 
 
 @dataclass(slots=True, frozen=True)
+class TapConfig:
+    enabled: bool = True
+    max_distance: float = 4.0
+    max_duration_ms: int = 1000
+    action: str = "super_key"
+    custom_command: str = ""
+
+
+@dataclass(slots=True, frozen=True)
 class LoggingConfig:
     level: str = "INFO"
     json: bool = False
@@ -52,6 +61,7 @@ class Config:
     engine: EngineConfig = EngineConfig()
     volume: VolumeConfig = VolumeConfig()
     brightness: BrightnessConfig = BrightnessConfig()
+    tap: TapConfig = TapConfig()
     logging: LoggingConfig = LoggingConfig()
 
 
@@ -82,13 +92,14 @@ def load_config(path: Path | None = None) -> Config:
         raise ConfigurationError(f"cannot parse {target}: {error}") from error
     if not isinstance(raw, dict):
         raise ConfigurationError("configuration root must be a mapping")
-    unknown = set(raw) - {"engine", "volume", "brightness", "logging"}
+    unknown = set(raw) - {"engine", "volume", "brightness", "tap", "logging"}
     if unknown:
         raise ConfigurationError(f"unknown sections: {', '.join(sorted(unknown))}")
     try:
         engine = EngineConfig(**_section(raw, "engine", {"dead_zone", "smoothing", "sensitivity", "curve", "axis_lock_threshold"}))
         volume = VolumeConfig(**_section(raw, "volume", {"enabled", "axis", "minimum", "maximum", "step", "threshold"}))
         brightness = BrightnessConfig(**_section(raw, "brightness", {"enabled", "axis", "minimum", "maximum", "step", "threshold"}))
+        tap = TapConfig(**_section(raw, "tap", {"enabled", "max_distance", "max_duration_ms", "action", "custom_command"}))
         logging = LoggingConfig(**_section(raw, "logging", {"level", "json"}))
     except TypeError as error:
         raise ConfigurationError(str(error)) from error
@@ -108,6 +119,13 @@ def load_config(path: Path | None = None) -> Config:
     if brightness.axis not in {"vertical", "horizontal"}:
         raise ConfigurationError("brightness.axis must be 'vertical' or 'horizontal'")
 
+    if tap.max_distance <= 0.0:
+        raise ConfigurationError("tap.max_distance must be positive")
+    if tap.max_duration_ms <= 0:
+        raise ConfigurationError("tap.max_duration_ms must be positive")
+    if tap.action not in {"super_key", "custom_command"}:
+        raise ConfigurationError("tap.action must be 'super_key' or 'custom_command'")
+
     if volume.enabled and brightness.enabled and volume.axis == brightness.axis:
         raise ConfigurationError("volume and brightness cannot be assigned to the same gesture axis")
 
@@ -125,4 +143,4 @@ def load_config(path: Path | None = None) -> Config:
         raise ConfigurationError("brightness.threshold must be positive")
     if logging.level.upper() not in {"DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"}:
         raise ConfigurationError("logging.level is invalid")
-    return Config(engine, volume, brightness, LoggingConfig(logging.level.upper(), logging.json))
+    return Config(engine, volume, brightness, tap, LoggingConfig(logging.level.upper(), logging.json))

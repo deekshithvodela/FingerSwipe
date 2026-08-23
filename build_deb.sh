@@ -30,7 +30,7 @@ Section: sound
 Priority: optional
 Architecture: $ARCH
 Maintainer: Deekshith Vodela <deekshithvodela@gmail.com>
-Depends: libinput10, libudev1, libpipewire-0.3-0, python3 (>= 3.13)
+Depends: libinput10, libudev1, libpipewire-0.3-0, python3 (>= 3.12)
 Description: Control default PipeWire sink volume and display brightness with 3-finger touchpad swipes.
 EOF
 

@@ -7,7 +7,18 @@
 #include <string.h>
 #include <stdbool.h>
 #include <unistd.h>
+#include <ctype.h>
 #include <dirent.h>
+
+static bool is_valid_device_name(const char *name) {
+    if (!name || *name == '\0') return false;
+    for (const char *p = name; *p != '\0'; ++p) {
+        if (!isalnum((unsigned char)*p) && *p != '_' && *p != '-') {
+            return false;
+        }
+    }
+    return true;
+}
 
 struct FSBrightness {
     pthread_t thread;
@@ -36,6 +47,7 @@ static bool find_backlight_device(char *out_path, size_t path_size, char *out_de
 
     while ((entry = readdir(dir)) != NULL) {
         if (entry->d_name[0] == '.') continue;
+        if (!is_valid_device_name(entry->d_name)) continue;
 
         char path[512];
         int len = snprintf(path, sizeof(path), "%s/%s/max_brightness", base_dir, entry->d_name);

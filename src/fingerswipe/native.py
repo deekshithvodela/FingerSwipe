@@ -30,6 +30,9 @@ def load_native(path: Path | None = None) -> ctypes.CDLL:
         raise NativeError("unsupported FingerSwipe native ABI")
     library.fs_error_string.argtypes = [ctypes.c_int]
     library.fs_error_string.restype = ctypes.c_char_p
+    if hasattr(library, "fs_uinput_trigger_super_key"):
+        library.fs_uinput_trigger_super_key.argtypes = []
+        library.fs_uinput_trigger_super_key.restype = ctypes.c_int
     return library
 
 

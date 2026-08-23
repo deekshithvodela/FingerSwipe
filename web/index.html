@@ -11,6 +11,8 @@
   <!-- Canonical URL & Favicons -->
   <link rel="canonical" href="https://deekshithvodela.github.io/FingerSwipe/">
   <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="assets/og-image-square.png">
+  <link rel="shortcut icon" href="assets/og-image-square.png">
   <link rel="apple-touch-icon" href="assets/og-image-square.png">
   <meta name="theme-color" content="#0b1617">
 
@@ -198,7 +200,7 @@
             <polyline points="7 10 12 15 17 10"></polyline>
             <line x1="12" y1="15" x2="12" y2="3"></line>
           </svg>
-          <span>Download Debian Package (<span id="release-tag">v1.1.0</span>)</span>
+          <span>Download Debian Package (<span id="release-tag">v1.2.0</span>)</span>
         </a>
 
         <div class="hero-cta-secondary">
@@ -250,7 +252,7 @@
         <h2 class="section-title">Touchpad Gesture Simulator</h2>
         <p class="section-desc">
           Drag on the virtual trackpad below to test the directional gesture engine.
-          Vertical swipes adjust audio volume; horizontal swipes control screen brightness.
+          Vertical swipes adjust audio volume; horizontal swipes control screen brightness; three-finger tap opens the Start Menu.
         </p>
       </div>
 
@@ -280,7 +282,7 @@
                 <circle cx="16" cy="11" r="1.8" fill="currentColor"/>
                 <circle cx="33" cy="12" r="1.8" fill="currentColor"/>
               </svg>
-              <span>Click &amp; drag vertically or horizontally</span>
+              <span>Click &amp; drag (Swipe) or tap (Start Menu)</span>
             </div>
 
             <div class="gesture-pointer" id="gesture-pointer"></div>
@@ -315,8 +317,11 @@
           <div class="meters-grid">
             <div class="meter-card">
               <div class="meter-header">
-                <span>Sink Volume (↕ Vertical)</span>
-                <span class="meter-val meter-vol-accent" id="meter-vol-val">65%</span>
+                <div class="meter-title-box">
+                  <span class="meter-title-text">Audio Volume</span>
+                  <span class="meter-subtext">↕ Vertical Swipe</span>
+                </div>
+                <span class="meter-pill meter-pill-vol" id="meter-vol-val">65%</span>
               </div>
               <div class="meter-bar-bg">
                 <div class="meter-bar-fill volume-fill" id="meter-vol-fill"></div>
@@ -325,11 +330,35 @@
 
             <div class="meter-card">
               <div class="meter-header">
-                <span>Display Brightness (↔ Horizontal)</span>
-                <span class="meter-val meter-bright-accent" id="meter-bright-val">80%</span>
+                <div class="meter-title-box">
+                  <span class="meter-title-text">Brightness</span>
+                  <span class="meter-subtext">↔ Horizontal Swipe</span>
+                </div>
+                <span class="meter-pill meter-pill-bright" id="meter-bright-val">80%</span>
               </div>
               <div class="meter-bar-bg">
                 <div class="meter-bar-fill brightness-fill" id="meter-bright-fill"></div>
+              </div>
+            </div>
+
+            <div class="meter-card meter-card-tap">
+              <div class="meter-header">
+                <div class="meter-title-box">
+                  <span class="meter-title-text">4-Finger Tap Target</span>
+                  <div class="sim-preset-wrapper">
+                    <select id="sim-tap-preset" class="sim-preset-select" aria-label="Select 4-Finger Tap Target Action">
+                      <option value="super">🚀 System Start Menu</option>
+                      <option value="browser">🌐 Web Browser</option>
+                      <option value="terminal">🖥️ Terminal Emulator</option>
+                      <option value="file_manager">📁 File Manager</option>
+                      <option value="launcher">⚡ Application Launcher</option>
+                    </select>
+                  </div>
+                </div>
+                <span class="meter-pill meter-pill-tap" id="meter-tap-val">READY</span>
+              </div>
+              <div class="meter-bar-bg">
+                <div class="meter-bar-fill tap-fill" id="meter-tap-fill"></div>
               </div>
             </div>
           </div>
@@ -437,26 +466,44 @@
 
       <div class="tab-container">
         <div class="tab-nav">
-          <button class="tab-btn active" data-tab="tab-deb">Debian / Ubuntu / Mint (.deb)</button>
-          <button class="tab-btn" data-tab="tab-tar">Universal Linux Bundle (.tar.gz)</button>
-          <button class="tab-btn" data-tab="tab-source">Source Compilation</button>
+          <button class="tab-btn active" data-tab="tab-apt">APT Repository (Auto-Updates)</button>
+          <button class="tab-btn" data-tab="tab-deb">Debian Package (.deb)</button>
+          <button class="tab-btn" data-tab="tab-tar">Universal Linux (.tar.gz)</button>
+          <button class="tab-btn" data-tab="tab-source">Source Build</button>
+        </div>
+
+        <!-- Tab 0: APT Repository -->
+        <div class="tab-pane active" id="tab-apt">
+          <h3 class="tab-heading">Official FingerSwipe APT Repository (Debian, Ubuntu, Pop!_OS, Linux Mint)</h3>
+          <p class="tab-subtext">Add our signed GPG APT repository to receive automatic system updates via <code>sudo apt upgrade</code>.</p>
+
+          <div class="command-box">
+            <button class="copy-btn" id="copy-apt-cmd">Copy</button>
+            <pre><code># 1. Add FingerSwipe GPG Key &amp; Signed APT Repository
+curl -fsSL https://deekshithvodela.github.io/FingerSwipe/apt/KEY.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/fingerswipe.gpg
+echo "deb [signed-by=/etc/apt/trusted.gpg.d/fingerswipe.gpg] https://deekshithvodela.github.io/FingerSwipe/apt stable main" | sudo tee /etc/apt/sources.list.d/fingerswipe.list
+
+# 2. Install FingerSwipe &amp; Enable User Daemon
+sudo apt update &amp;&amp; sudo apt install fingerswipe
+systemctl --user enable --now fingerswipe.service</code></pre>
+          </div>
         </div>
 
         <!-- Tab 1: Debian Package -->
-        <div class="tab-pane active" id="tab-deb">
+        <div class="tab-pane" id="tab-deb">
           <h3 class="tab-heading">Recommended for Ubuntu, Debian, Pop!_OS, Linux Mint</h3>
           <p class="tab-subtext">Standard Debian package handling system libraries, Python virtualenv in <code>/opt/fingerswipe</code>, systemd unit, and udev rules.</p>
 
           <div class="command-box">
             <button class="copy-btn" id="copy-deb-cmd">Copy</button>
             <pre><code># 1. Download and install / update .deb package
-sudo apt install ./fingerswipe_1.1.0_amd64.deb
+sudo apt install ./fingerswipe_1.2.0_amd64.deb
 
 # 2. Enable &amp; start user service (first-time install only)
 systemctl --user enable --now fingerswipe.service
 
 # To update in the future, simply re-run:
-sudo apt install --reinstall ./fingerswipe_1.1.0_amd64.deb</code></pre>
+sudo apt install --reinstall ./fingerswipe_1.2.0_amd64.deb</code></pre>
           </div>
 
           <div class="download-cards-grid">
@@ -610,12 +657,89 @@ systemctl --user enable --now fingerswipe.service</code></pre>
             </label>
             <input type="range" class="range-slider" id="cfg-bright-step" min="1" max="10" step="1" value="1">
           </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>4-Finger Tap Gesture</span>
+              <span class="config-val-mono">enabled</span>
+            </label>
+            <select class="select-input" id="cfg-tap-enabled">
+              <option value="true" selected>Enabled (Active)</option>
+              <option value="false">Disabled</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Select 4-Finger Tap Application Target</span>
+              <span class="config-val-mono" id="app-selected-label">Start Menu (Default)</span>
+            </label>
+            <div class="app-picker-grid" id="app-picker-grid">
+              <div class="app-card active" data-action="super_key" data-cmd="" data-label="System Start Menu">
+                <div class="app-card-icon">🚀</div>
+                <div class="app-card-info">
+                  <strong>Start Menu</strong>
+                  <span>Super Key / DBus</span>
+                </div>
+              </div>
+              <div class="app-card" data-action="custom_command" data-cmd="brave" data-label="Web Browser">
+                <div class="app-card-icon">🌐</div>
+                <div class="app-card-info">
+                  <strong>Web Browser</strong>
+                  <span>Brave / Firefox</span>
+                </div>
+              </div>
+              <div class="app-card" data-action="custom_command" data-cmd="konsole" data-label="Terminal Emulator">
+                <div class="app-card-icon">🖥️</div>
+                <div class="app-card-info">
+                  <strong>Terminal</strong>
+                  <span>Konsole / Alacritty</span>
+                </div>
+              </div>
+              <div class="app-card" data-action="custom_command" data-cmd="dolphin" data-label="File Manager">
+                <div class="app-card-icon">📁</div>
+                <div class="app-card-info">
+                  <strong>File Manager</strong>
+                  <span>Dolphin / Nautilus</span>
+                </div>
+              </div>
+              <div class="app-card" data-action="custom_command" data-cmd="rofi -show drun" data-label="Application Launcher">
+                <div class="app-card-icon">⚡</div>
+                <div class="app-card-info">
+                  <strong>App Launcher</strong>
+                  <span>Rofi / KRunner</span>
+                </div>
+              </div>
+            </div>
+
+            <input type="hidden" id="cfg-tap-action" value="super_key">
+            <input type="hidden" id="cfg-tap-cmd" value="">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Max Tap Distance</span>
+              <span id="val-tap-dist" class="config-val-mono">4.0</span>
+            </label>
+            <input type="range" class="range-slider" id="cfg-tap-dist" min="0.1" max="10.0" step="0.5" value="4.0">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <span>Max Tap Duration</span>
+              <span id="val-tap-duration" class="config-val-mono">1000ms</span>
+            </label>
+            <input type="range" class="range-slider" id="cfg-tap-duration" min="100" max="1500" step="50" value="1000">
+          </div>
         </div>
 
         <div class="config-preview-box">
           <div class="config-preview-header">
             <span class="config-preview-title">Preview: <code>~/.config/fingerswipe/config.yaml</code></span>
-            <button class="copy-btn" id="copy-yaml-btn" data-copy-target="cfg-output-yaml">Copy YAML</button>
+            <div class="config-preview-btn-group" style="display: flex; gap: 6px; flex-wrap: wrap; flex-shrink: 0;">
+              <button class="btn btn-secondary btn-sm" id="btn-reset-defaults" style="padding: 4px 8px; font-size: 0.74rem;">🔄 Reset Defaults</button>
+              <button class="copy-btn" id="copy-yaml-btn" data-copy-target="cfg-output-yaml" style="padding: 4px 8px; font-size: 0.74rem;">Copy YAML</button>
+            </div>
           </div>
           <div class="command-box">
             <pre><code id="cfg-output-yaml">engine:
@@ -641,9 +765,26 @@ brightness:
   step: 0.01
   threshold: 4.0
 
+tap:
+  enabled: true
+  max_distance: 4.0
+  max_duration_ms: 1000
+  action: super_key
+  custom_command: ""
+
 logging:
   level: INFO
   json: false</code></pre>
+          </div>
+
+          <div class="cli-apply-box">
+            <div class="cli-apply-header">
+              <span>1-Click Auto-Apply Terminal Command</span>
+            </div>
+            <div class="command-box">
+              <button class="copy-btn" id="copy-cli-btn" data-copy-target="cfg-output-cli">Copy Command</button>
+              <pre><code id="cfg-output-cli">fingerswipe config set --tap-action super_key</code></pre>
+            </div>
           </div>
         </div>
       </div>

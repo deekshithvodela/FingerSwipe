@@ -43,19 +43,23 @@ static bool process_next_event(struct libinput *li, FSGestureEvent *out) {
     struct libinput_event *event;
     while ((event = libinput_get_event(li)) != NULL) {
         enum libinput_event_type type = libinput_event_get_type(event);
-        if (type >= LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN && type <= LIBINPUT_EVENT_GESTURE_SWIPE_END) {
+        if ((type >= LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN && type <= LIBINPUT_EVENT_GESTURE_SWIPE_END) ||
+            (type >= LIBINPUT_EVENT_GESTURE_PINCH_BEGIN && type <= LIBINPUT_EVENT_GESTURE_PINCH_END) ||
+            (type >= LIBINPUT_EVENT_GESTURE_HOLD_BEGIN && type <= LIBINPUT_EVENT_GESTURE_HOLD_END)) {
             struct libinput_event_gesture *gesture = libinput_event_get_gesture_event(event);
             *out = (FSGestureEvent){
                 .size = sizeof(*out),
                 .fingers = libinput_event_gesture_get_finger_count(gesture),
                 .timestamp_us = libinput_event_gesture_get_time_usec(gesture)
             };
-            if (type == LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN) {
+            if (type == LIBINPUT_EVENT_GESTURE_SWIPE_BEGIN || type == LIBINPUT_EVENT_GESTURE_PINCH_BEGIN || type == LIBINPUT_EVENT_GESTURE_HOLD_BEGIN) {
                 out->phase = FS_GESTURE_SWIPE_BEGIN;
-            } else if (type == LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE) {
+            } else if (type == LIBINPUT_EVENT_GESTURE_SWIPE_UPDATE || type == LIBINPUT_EVENT_GESTURE_PINCH_UPDATE) {
                 out->phase = FS_GESTURE_SWIPE_UPDATE;
                 out->dx = libinput_event_gesture_get_dx(gesture);
                 out->dy = libinput_event_gesture_get_dy(gesture);
+            } else if (type == LIBINPUT_EVENT_GESTURE_HOLD_END) {
+                out->phase = FS_GESTURE_SWIPE_END;
             } else {
                 out->phase = libinput_event_gesture_get_cancelled(gesture) ? FS_GESTURE_SWIPE_CANCEL : FS_GESTURE_SWIPE_END;
             }

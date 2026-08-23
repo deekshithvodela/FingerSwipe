@@ -20,6 +20,12 @@ class BrightnessController(Controller):
         self._current_brightness: float | None = None
         self._buffer = 0.0
 
+    def update_config(self, config: BrightnessConfig) -> None:
+        self._minimum = config.minimum
+        self._maximum = config.maximum
+        self._step = config.step
+        self._threshold = config.threshold
+
     def handle(self, motion: ProcessedMotion) -> None:
         if motion.phase is GesturePhase.BEGIN:
             self._current_brightness = self._backend.get_brightness()

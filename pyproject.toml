@@ -1,6 +1,6 @@
 [project]
 name = "fingerswipe"
-version = "1.1.0"
+version = "1.2.0"
 description = "Linux three-finger gesture volume controller"
 readme = "README.md"
 authors = [
@@ -25,3 +25,7 @@ dev = [
     "pytest>=9.1.1",
     "ruff>=0.15.20",
 ]
+
+[[tool.mypy.overrides]]
+module = ["gi", "gi.repository"]
+ignore_missing_imports = true

@@ -250,6 +250,8 @@ function initGestureSimulator() {
   const volFill = document.getElementById('meter-vol-fill');
   const brightVal = document.getElementById('meter-bright-val');
   const brightFill = document.getElementById('meter-bright-fill');
+  const tapVal = document.getElementById('meter-tap-val');
+  const tapFill = document.getElementById('meter-tap-fill');
 
   if (!surface) return;
 
@@ -258,6 +260,7 @@ function initGestureSimulator() {
   let startY = 0;
   let lastX = 0;
   let lastY = 0;
+  let startTimeMs = 0;
   let lockedAxis = null;
   const lockThreshold = 14;
 
@@ -275,10 +278,12 @@ function initGestureSimulator() {
     }
   }
 
+  const presetSelect = document.getElementById('sim-tap-preset');
+
   function triggerOSD(type, value) {
     if (!osdLabel || !osdVal || !osdFill || !osdIcon) return;
     if (type === 'volume') {
-      osdLabel.textContent = 'Audio Volume (PipeWire)';
+      osdLabel.textContent = 'Audio Volume';
       osdVal.textContent = `${Math.round(value * 100)}%`;
       osdFill.style.width = `${value * 100}%`;
       osdFill.style.background = 'var(--accent-primary)';
@@ -288,7 +293,7 @@ function initGestureSimulator() {
           <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
         </svg>
       `;
-    } else {
+    } else if (type === 'brightness') {
       osdLabel.textContent = 'Display Brightness';
       osdVal.textContent = `${Math.round(value * 100)}%`;
       osdFill.style.width = `${value * 100}%`;
@@ -306,6 +311,25 @@ function initGestureSimulator() {
           <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
         </svg>
       `;
+    } else if (type === 'tap') {
+      const preset = presetSelect ? presetSelect.value : 'super';
+      const presetTitles = {
+        super: 'Start Menu',
+        browser: 'Web Browser',
+        terminal: 'Terminal Emulator',
+        file_manager: 'File Manager',
+        launcher: 'App Launcher'
+      };
+      osdLabel.textContent = presetTitles[preset] || 'Start Menu';
+      osdVal.textContent = 'LAUNCHED';
+      osdFill.style.width = '100%';
+      osdFill.style.background = 'var(--accent-secondary)';
+      osdIcon.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"></path>
+          <path d="m12 15-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-3.05 11a22.35 22.35 0 0 1-3.95 2z"></path>
+        </svg>
+      `;
     }
   }
 
@@ -316,6 +340,7 @@ function initGestureSimulator() {
     startY = clientY - rect.top;
     lastX = startX;
     lastY = startY;
+    startTimeMs = performance.now();
     lockedAxis = null;
 
     if (pointer) {
@@ -382,12 +407,40 @@ function initGestureSimulator() {
   function handleEnd() {
     if (!isTracking) return;
     isTracking = false;
-    if (pointer) pointer.classList.remove('active');
-    if (prompt) prompt.style.opacity = '1';
-    if (axisIndicator) {
+    const duration = performance.now() - startTimeMs;
+    const totalDist = Math.abs(lastX - startX) + Math.abs(lastY - startY);
+
+    if (!lockedAxis && totalDist < lockThreshold && duration < 300) {
+      triggerOSD('tap', 1.0);
+      const preset = presetSelect ? presetSelect.value : 'super';
+      const presetLabels = {
+        super: 'START MENU',
+        browser: 'WEB BROWSER',
+        terminal: 'TERMINAL',
+        file_manager: 'FILE MANAGER',
+        launcher: 'APP LAUNCHER'
+      };
+      if (axisIndicator) {
+        axisIndicator.textContent = `TRIGGERED: 4-FINGER TAP [${presetLabels[preset] || 'START MENU'}]`;
+        axisIndicator.style.color = 'var(--accent-secondary)';
+      }
+      if (tapVal) {
+        tapVal.textContent = 'TRIGGERED';
+        tapVal.classList.add('active');
+      }
+      setTimeout(() => {
+        if (tapVal) {
+          tapVal.textContent = 'READY';
+          tapVal.classList.remove('active');
+        }
+      }, 1500);
+    } else if (axisIndicator) {
       axisIndicator.textContent = 'AXIS: IDLE';
       axisIndicator.style.color = 'var(--text-faint)';
     }
+
+    if (pointer) pointer.classList.remove('active');
+    if (prompt) prompt.style.opacity = '1';
   }
 
   surface.addEventListener('pointerdown', (e) => {
@@ -519,7 +572,7 @@ async function initGitHubReleaseData() {
   const debSizeEl = document.getElementById('deb-file-size');
   const tarSizeEl = document.getElementById('tar-file-size');
 
-  const defaultVersion = 'v1.1.0';
+  const defaultVersion = 'v1.2.0';
 
   try {
     const repoRes = await fetch(`https://api.github.com/repos/${repo}`);
@@ -573,9 +626,44 @@ function initConfigGenerator() {
   const volStepVal = document.getElementById('val-vol-step');
   const brightStepInput = document.getElementById('cfg-bright-step');
   const brightStepVal = document.getElementById('val-bright-step');
+
+  const tapEnabledInput = document.getElementById('cfg-tap-enabled');
+  const tapActionInput = document.getElementById('cfg-tap-action');
+  const tapCmdGroup = document.getElementById('group-custom-cmd');
+  const tapCmdInput = document.getElementById('cfg-tap-cmd');
+  const tapDistInput = document.getElementById('cfg-tap-dist');
+  const tapDistVal = document.getElementById('val-tap-dist');
+  const tapDurationInput = document.getElementById('cfg-tap-duration');
+  const tapDurationVal = document.getElementById('val-tap-duration');
+
   const outputCode = document.getElementById('cfg-output-yaml');
 
-  if (!outputCode) return;
+  const appCards = document.querySelectorAll('.app-card');
+  const appSelectedLabel = document.getElementById('app-selected-label');
+  const outputCli = document.getElementById('cfg-output-cli');
+
+  appCards.forEach(card => {
+    card.addEventListener('click', () => {
+      appCards.forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+
+      const action = card.getAttribute('data-action');
+      const cmd = card.getAttribute('data-cmd') || '';
+      const label = card.getAttribute('data-label') || 'System Start Menu';
+
+      if (appSelectedLabel) appSelectedLabel.textContent = label;
+
+      if (action === 'custom_command') {
+        if (tapActionInput) tapActionInput.value = 'custom_command';
+        if (tapCmdInput) tapCmdInput.value = cmd;
+      } else {
+        if (tapActionInput) tapActionInput.value = 'super_key';
+        if (tapCmdInput) tapCmdInput.value = '';
+      }
+
+      updateYAML();
+    });
+  });
 
   function updateYAML() {
     const curve = curveInput ? curveInput.value : 'linear';
@@ -586,12 +674,20 @@ function initConfigGenerator() {
     const volStep = volStepInput ? (parseFloat(volStepInput.value) / 100).toFixed(2) : '0.01';
     const brightStep = brightStepInput ? (parseFloat(brightStepInput.value) / 100).toFixed(2) : '0.01';
 
+    const tapEnabled = tapEnabledInput ? tapEnabledInput.value === 'true' : true;
+    const tapAction = tapActionInput ? tapActionInput.value : 'super_key';
+    const tapCmd = tapCmdInput ? tapCmdInput.value.trim() : '';
+    const tapDist = tapDistInput ? parseFloat(tapDistInput.value).toFixed(1) : '4.0';
+    const tapDuration = tapDurationInput ? parseInt(tapDurationInput.value, 10) : 1000;
+
     if (deadZoneVal) deadZoneVal.textContent = deadZone;
     if (smoothingVal) smoothingVal.textContent = smoothing;
     if (sensitivityVal) sensitivityVal.textContent = sensitivity;
     if (lockThreshVal) lockThreshVal.textContent = lockThresh;
     if (volStepVal) volStepVal.textContent = `${Math.round(parseFloat(volStep) * 100)}%`;
     if (brightStepVal) brightStepVal.textContent = `${Math.round(parseFloat(brightStep) * 100)}%`;
+    if (tapDistVal) tapDistVal.textContent = tapDist;
+    if (tapDurationVal) tapDurationVal.textContent = `${tapDuration}ms`;
 
     outputCode.textContent = `engine:
   dead_zone: ${deadZone}
@@ -616,14 +712,58 @@ brightness:
   step: ${brightStep}
   threshold: 4.0
 
+tap:
+  enabled: ${tapEnabled}
+  max_distance: ${tapDist}
+  max_duration_ms: ${tapDuration}
+  action: ${tapAction}
+  custom_command: "${tapAction === 'custom_command' ? tapCmd : ''}"
+
 logging:
   level: INFO
   json: false`;
+
+    if (outputCli) {
+      if (tapAction === 'custom_command' && tapCmd) {
+        outputCli.textContent = `fingerswipe config set --tap-action custom_command --tap-cmd "${tapCmd}"`;
+      } else {
+        outputCli.textContent = `fingerswipe config set --tap-action super_key`;
+      }
+    }
   }
 
-  [curveInput, deadZoneInput, smoothingInput, sensitivityInput, lockThreshInput, volStepInput, brightStepInput].forEach(input => {
-    if (input) input.addEventListener('input', updateYAML);
+  [curveInput, deadZoneInput, smoothingInput, sensitivityInput, lockThreshInput, volStepInput, brightStepInput, tapEnabledInput, tapActionInput, tapCmdInput, tapDistInput, tapDurationInput].forEach(input => {
+    if (input) {
+      input.addEventListener('input', updateYAML);
+      input.addEventListener('change', updateYAML);
+    }
   });
+
+  const resetBtn = document.getElementById('btn-reset-defaults');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', () => {
+      if (curveInput) curveInput.value = 'linear';
+      if (deadZoneInput) deadZoneInput.value = '0.0';
+      if (smoothingInput) smoothingInput.value = '1.0';
+      if (sensitivityInput) sensitivityInput.value = '1.0';
+      if (lockThreshInput) lockThreshInput.value = '2.0';
+      if (volStepInput) volStepInput.value = '1';
+      if (brightStepInput) brightStepInput.value = '1';
+      if (tapEnabledInput) tapEnabledInput.value = 'true';
+      if (tapActionInput) tapActionInput.value = 'super_key';
+      if (tapCmdInput) tapCmdInput.value = 'rofi -show drun';
+      if (tapDistInput) tapDistInput.value = '4.0';
+      if (tapDurationInput) tapDurationInput.value = '1000';
+
+      appCards.forEach(c => c.classList.remove('active'));
+      const defaultCard = document.querySelector('.app-card[data-action="super_key"]');
+      if (defaultCard) defaultCard.classList.add('active');
+      if (appSelectedLabel) appSelectedLabel.textContent = 'Start Menu (Default)';
+
+      updateYAML();
+      if (outputCli) outputCli.textContent = 'fingerswipe config reset';
+    });
+  }
 
   updateYAML();
 }

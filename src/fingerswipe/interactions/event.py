@@ -9,3 +9,4 @@ class GestureEvent:
     dx: float
     dy: float
     timestamp: float
+    fingers: int = 3

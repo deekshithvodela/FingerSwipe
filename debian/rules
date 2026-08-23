@@ -15,7 +15,7 @@ override_dh_auto_install:
 	cmake --install build --prefix debian/fingerswipe/usr
 	
 	# Create isolated virtualenv inside debian packaging directory
-	uv venv --python 3.13 debian/fingerswipe/opt/fingerswipe
+	uv venv --seed --system-site-packages --python 3.13 debian/fingerswipe/opt/fingerswipe
 	
 	# Install the built wheel and its dependencies into the virtualenv
 	uv pip install --python debian/fingerswipe/opt/fingerswipe/bin/python \

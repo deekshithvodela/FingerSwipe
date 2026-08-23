@@ -20,3 +20,6 @@ wheels/
 
 # Project state
 PROJECT_STATE.md
+
+# Agent Customizations & Workspace State
+.agents/

@@ -1,5 +1,21 @@
-fingerswipe (1.0.0) unstable; urgency=medium
+fingerswipe (1.2.0-1) unstable; urgency=medium
 
-  * Initial release.
+  * Release v1.2.0: 3-finger tap Start Menu trigger & APT repository generator.
+  * Added native /dev/uinput virtual keyboard event backend for Super key emission.
+  * Added TapController and zero-conflict GestureAxisRouter tap detection.
+  * Expanded interactive touchpad simulator with 3-card live meter grid.
 
- -- deevodee <deekshithvodela@gmail.com>  Sat, 04 Jul 2026 13:58:00 +0530
+ -- Deekshith Vodela <deekshithvodela@gmail.com>  Sun, 23 Aug 2026 20:42:00 +0530
+
+fingerswipe (1.1.0-1) unstable; urgency=medium
+
+  * Release v1.1.0: 3-finger horizontal display brightness control.
+  * Multi-palette web documentation portal & local CI test pipeline.
+
+ -- Deekshith Vodela <deekshithvodela@gmail.com>  Wed, 19 Aug 2026 18:00:00 +0530
+
+fingerswipe (1.0.0-1) unstable; urgency=medium
+
+  * Initial release v1.0.0: 3-finger vertical volume control service.
+
+ -- Deekshith Vodela <deekshithvodela@gmail.com>  Sat, 04 Jul 2026 13:58:00 +0530

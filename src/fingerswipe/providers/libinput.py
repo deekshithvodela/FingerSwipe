@@ -41,8 +41,8 @@ class LibinputProvider(Provider):
             raw.size = ctypes.sizeof(raw)
             check(self._library, self._library.fs_input_poll(
                 self._handle, self._poll_ms, ctypes.byref(raw), ctypes.byref(available)))
-            if available.value and raw.fingers == 3:
-                yield GestureEvent(self._phases[raw.phase], raw.dx, raw.dy, raw.timestamp_us / 1_000_000)
+            if available.value and raw.fingers in (3, 4):
+                yield GestureEvent(self._phases[raw.phase], raw.dx, raw.dy, raw.timestamp_us / 1_000_000, fingers=raw.fingers)
 
     def __enter__(self) -> LibinputProvider:
         return self

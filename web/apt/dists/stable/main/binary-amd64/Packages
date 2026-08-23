@@ -1,0 +1,14 @@
+Package: fingerswipe
+Version: 1.2.0
+Architecture: amd64
+Maintainer: Deekshith Vodela <deekshithvodela@gmail.com>
+Depends: libinput10, libudev1, libpipewire-0.3-0, python3 (>= 3.12)
+Filename: pool/main/f/fingerswipe/fingerswipe_1.2.0_amd64.deb
+Size: 315992
+MD5sum: c7120fb026d6f11963c5fc7143b1b6ae
+SHA1: 03b6d0213d1b8a2f2985b6e1fd84e9fa65c60736
+SHA256: 5e3fb7514d8c73f661189d9473dd1f15e9aedbaea888d9dfbb1588355112d956
+Section: sound
+Priority: optional
+Description: Control default PipeWire sink volume and display brightness with 3-finger touchpad swipes.
+

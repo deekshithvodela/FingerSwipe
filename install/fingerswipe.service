@@ -10,11 +10,6 @@ Restart=on-failure
 RestartSec=2s
 NoNewPrivileges=yes
 PrivateTmp=yes
-ProtectSystem=strict
-ProtectHome=read-only
-RestrictAddressFamilies=AF_UNIX AF_NETLINK
-LockPersonality=yes
-MemoryDenyWriteExecute=yes
 
 [Install]
 WantedBy=default.target

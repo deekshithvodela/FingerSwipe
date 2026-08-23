@@ -65,6 +65,10 @@ FS_API void fs_brightness_destroy(FSBrightness *brightness);
 FS_API FSError fs_brightness_get(FSBrightness *brightness, double *value);
 FS_API FSError fs_brightness_set(FSBrightness *brightness, double value);
 
+FS_API FSError fs_uinput_init(void);
+FS_API FSError fs_uinput_trigger_super_key(void);
+FS_API void fs_uinput_cleanup(void);
+
 #ifdef __cplusplus
 }
 #endif

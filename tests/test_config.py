@@ -31,9 +31,21 @@ def test_complete_configuration_is_loaded(tmp_path: Path) -> None:
     "volume:\n  axis: diagonal\n",
     "volume:\n  axis: horizontal\n  enabled: true\nbrightness:\n  axis: horizontal\n  enabled: true\n",
     "engine: []\n",
+    "tap:\n  max_distance: 0.0\n",
+    "tap:\n  action: invalid\n",
 ])
 def test_invalid_configuration_is_rejected(tmp_path: Path, content: str) -> None:
     path = tmp_path / "config.yaml"
     path.write_text(content, encoding="utf-8")
     with pytest.raises(ConfigurationError):
         load_config(path)
+
+
+def test_tap_configuration_is_loaded(tmp_path: Path) -> None:
+    path = tmp_path / "config.yaml"
+    path.write_text("tap:\n  enabled: true\n  max_distance: 0.8\n  action: custom_command\n  custom_command: 'rofi -show drun'\n", encoding="utf-8")
+    config = load_config(path)
+    assert config.tap.enabled is True
+    assert config.tap.max_distance == 0.8
+    assert config.tap.action == "custom_command"
+    assert config.tap.custom_command == "rofi -show drun"

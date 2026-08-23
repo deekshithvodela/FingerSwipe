@@ -20,6 +20,12 @@ class VolumeController(Controller):
         self._current_volume: float | None = None
         self._buffer = 0.0
 
+    def update_config(self, config: VolumeConfig) -> None:
+        self._minimum = config.minimum
+        self._maximum = config.maximum
+        self._step = config.step
+        self._threshold = config.threshold
+
     def handle(self, motion: ProcessedMotion) -> None:
         if motion.phase is GesturePhase.BEGIN:
             self._current_volume = self._backend.get_volume()

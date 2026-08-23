@@ -8,3 +8,4 @@ class ProcessedMotion:
     phase: GesturePhase
     dx: float
     dy: float
+    fingers: int = 3

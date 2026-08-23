@@ -84,3 +84,20 @@ def test_router_handles_single_enabled_axis() -> None:
 
     router.handle(ProcessedMotion(GesturePhase.END, 0.0, 0.0))
     assert router.mode == "UNLOCKED"
+
+
+def test_router_4_finger_gestures_do_not_trigger_swipe_controllers() -> None:
+    vol_ctrl = MockController()
+    router = GestureAxisRouter(vertical_controller=vol_ctrl, axis_lock_threshold=0.5)
+
+    router.handle(ProcessedMotion(GesturePhase.BEGIN, 0.0, 0.0, fingers=4))
+    router.handle(ProcessedMotion(GesturePhase.UPDATE, 0.0, 5.0, fingers=4))
+    router.handle(ProcessedMotion(GesturePhase.END, 0.0, 0.0, fingers=4))
+
+    # 4-finger gestures must never trigger 3-finger volume swipe controller
+    assert len(vol_ctrl.handled_motions) == 0
+
+
+
+
+

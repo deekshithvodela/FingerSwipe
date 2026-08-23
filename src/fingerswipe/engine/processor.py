@@ -38,6 +38,7 @@ class GestureEngine(Engine):
             phase=event.phase,
             dx=dx,
             dy=dy,
+            fingers=event.fingers,
         )
 
     def _process_axis(self, value: float, previous: float) -> float:

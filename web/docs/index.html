@@ -11,6 +11,8 @@
   <!-- Canonical URL & Favicons -->
   <link rel="canonical" href="https://deekshithvodela.github.io/FingerSwipe/docs/">
   <link rel="icon" type="image/svg+xml" href="../assets/logo.svg">
+  <link rel="icon" type="image/png" sizes="192x192" href="../assets/og-image-square.png">
+  <link rel="shortcut icon" href="../assets/og-image-square.png">
   <link rel="apple-touch-icon" href="../assets/og-image-square.png">
   <meta name="theme-color" content="#0b1617">
 
@@ -160,7 +162,7 @@
       </svg>
       <span>Table of Contents</span>
     </button>
-    <a href="https://github.com/deekshithvodela/FingerSwipe/releases/tag/v1.1.0" target="_blank" rel="noopener" class="version-pill-mono" title="View v1.1.0 Release on GitHub">v1.1.0</a>
+    <a href="https://github.com/deekshithvodela/FingerSwipe/releases/tag/v1.2.0" target="_blank" rel="noopener" class="version-pill-mono" title="View v1.2.0 Release on GitHub">v1.2.0</a>
   </div>
 
   <div class="docs-overlay" id="docs-overlay"></div>
@@ -174,43 +176,46 @@
           <circle cx="11" cy="11" r="8"></circle>
           <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
         </svg>
-        <input type="text" class="docs-search-input" id="docs-search-input" placeholder="Search documentation...">
+        <input type="search" id="docs-search-input" placeholder="Search docs (e.g. udev, tap, pipewire)..." aria-label="Search documentation">
       </div>
 
-      <div class="docs-nav-group">
-        <div class="docs-nav-title">Getting Started</div>
-        <ul class="docs-nav-list">
-          <li><a href="#quickstart" class="docs-nav-link active">1. Quickstart &amp; Install</a></li>
-          <li><a href="#eligibility" class="docs-nav-link">2. Hardware Diagnostics</a></li>
-          <li><a href="#updating" class="docs-nav-link">3. Updating In-Place</a></li>
-        </ul>
-      </div>
+      <nav class="docs-nav" role="navigation">
+        <div class="docs-nav-group">
+          <span class="docs-nav-title">Getting Started</span>
+          <a href="#quickstart" class="docs-nav-link active">1. Quickstart &amp; Install</a>
+          <a href="#eligibility" class="docs-nav-link">2. Hardware Diagnostic</a>
+          <a href="#architecture" class="docs-nav-link">3. C23 Native Architecture</a>
+        </div>
 
-      <div class="docs-nav-group">
-        <div class="docs-nav-title">Architecture &amp; Code</div>
-        <ul class="docs-nav-list">
-          <li><a href="#architecture" class="docs-nav-link">4. System Architecture</a></li>
-          <li><a href="#native-abi" class="docs-nav-link">5. C23 Native ABI</a></li>
-          <li><a href="#configuration" class="docs-nav-link">6. Configuration &amp; Curves</a></li>
-          <li><a href="#cli-reference" class="docs-nav-link">7. CLI Reference</a></li>
-        </ul>
-      </div>
+        <div class="docs-nav-group">
+          <span class="docs-nav-title">Integration &amp; Config</span>
+          <a href="#pipewire" class="docs-nav-link">4. PipeWire &amp; Brightness</a>
+          <a href="#systemd" class="docs-nav-link">5. Systemd User Service</a>
+          <a href="#configuration" class="docs-nav-link">6. Configuration File</a>
+        </div>
+
+        <div class="docs-nav-group">
+          <span class="docs-nav-title">Reference</span>
+          <a href="#cli-reference" class="docs-nav-link">7. CLI Reference</a>
+          <a href="#troubleshooting" class="docs-nav-link">8. Troubleshooting</a>
+          <a href="#faq" class="docs-nav-link">9. FAQ</a>
+        </div>
+      </nav>
     </aside>
 
-    <!-- Main Documentation Content -->
-    <main class="docs-content">
+    <!-- Main Content Area -->
+    <main class="docs-content" id="main-content">
       <div class="docs-breadcrumbs">
-        <a href="../">FingerSwipe</a>
-        <span>/</span>
-        <span>Documentation</span>
-        <span>/</span>
-        <a href="https://github.com/deekshithvodela/FingerSwipe/releases/tag/v1.1.0" target="_blank" rel="noopener" class="docs-breadcrumb-version" title="View v1.1.0 on GitHub Releases">v1.1.0</a>
+        <a href="../">Home</a>
+        <span class="breadcrumb-sep">/</span>
+        <span class="breadcrumb-current">Documentation</span>
+        <a href="https://github.com/deekshithvodela/FingerSwipe/releases/tag/v1.2.0" target="_blank" rel="noopener" class="version-pill-mono" style="margin-left: auto;">v1.2.0</a>
       </div>
 
       <article class="docs-article">
         <h1>FingerSwipe Documentation</h1>
         <p class="docs-lead">
-          Comprehensive technical reference and developer documentation for the FingerSwipe gesture daemon, C23 Native ABI, PipeWire sink volume controller, and backlight brightness engine.
+          Comprehensive technical reference and developer documentation for the FingerSwipe gesture daemon, C23 Native ABI, PipeWire sink volume controller, backlight brightness engine, and 4-finger tap Start Menu launcher.
         </p>
 
         <!-- Section 1: Quickstart & Installation -->
@@ -218,11 +223,23 @@
           <h2>1. Quickstart &amp; Installation</h2>
           <p>FingerSwipe runs as an unprivileged user daemon with direct device access granted through standard <code>udev</code> session tags (<code>uaccess</code>). Pre-built binary packages are available on <a href="https://github.com/deekshithvodela/FingerSwipe/releases" target="_blank" rel="noopener">GitHub Releases</a>.</p>
 
-          <h3>Debian / Ubuntu Installation</h3>
+          <h3>Debian / Ubuntu APT Repository (Recommended for Auto-Updates)</h3>
           <div class="command-box">
             <button class="copy-btn">Copy</button>
-            <pre><code># Install deb package
-sudo apt install ./fingerswipe_1.1.0_amd64.deb
+            <pre><code># Add FingerSwipe GPG key &amp; Signed APT repository
+curl -fsSL https://deekshithvodela.github.io/FingerSwipe/apt/KEY.gpg | sudo gpg --dearmor --yes -o /etc/apt/trusted.gpg.d/fingerswipe.gpg
+echo "deb [signed-by=/etc/apt/trusted.gpg.d/fingerswipe.gpg] https://deekshithvodela.github.io/FingerSwipe/apt stable main" | sudo tee /etc/apt/sources.list.d/fingerswipe.list
+
+# Install FingerSwipe &amp; enable user daemon
+sudo apt update &amp;&amp; sudo apt install fingerswipe
+systemctl --user enable --now fingerswipe.service</code></pre>
+          </div>
+
+          <h3>Standalone Debian Package (.deb)</h3>
+          <div class="command-box">
+            <button class="copy-btn">Copy</button>
+            <pre><code># Download fingerswipe_1.2.0_amd64.deb from GitHub Releases
+sudo apt install ./fingerswipe_1.2.0_amd64.deb
 
 # Enable and start user daemon
 systemctl --user daemon-reload
@@ -232,8 +249,8 @@ systemctl --user enable --now fingerswipe.service</code></pre>
           <h3>Universal Linux Installation (Arch / Fedora / openSUSE / Void)</h3>
           <div class="command-box">
             <button class="copy-btn">Copy</button>
-            <pre><code>tar -xzf fingerswipe-1.1.0-linux-x86_64.tar.gz
-cd fingerswipe-1.1.0-linux-x86_64
+            <pre><code>tar -xzf fingerswipe-1.2.0-linux-x86_64.tar.gz
+cd fingerswipe-1.2.0-linux-x86_64
 sudo ./install.sh
 
 systemctl --user daemon-reload
@@ -393,6 +410,13 @@ brightness:
   step: 0.01
   threshold: 4.0
 
+tap:
+  enabled: true
+  max_distance: 0.5
+  max_duration_ms: 250
+  action: super_key
+  custom_command: ""
+
 logging:
   level: INFO
   json: false</code></pre>
@@ -408,6 +432,10 @@ logging:
             <button class="copy-btn">Copy</button>
             <pre><code># Start the user daemon in foreground (for testing/logs)
 fingerswipe --foreground
+
+# Enable or disable 4-finger tap Start Menu trigger
+fingerswipe --enable-tap
+fingerswipe --disable-tap --tap-action custom_command
 
 # Validate configuration syntax
 fingerswipe --check-config

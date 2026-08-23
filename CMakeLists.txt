@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 project(
     FingerSwipe
-    VERSION 1.0.0
+    VERSION 1.2.0
     DESCRIPTION "Native gesture engine for Linux"
     LANGUAGES C
 )

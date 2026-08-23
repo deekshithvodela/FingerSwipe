@@ -1,0 +1,14 @@
+Origin: FingerSwipe
+Label: FingerSwipe
+Suite: stable
+Codename: stable
+Architectures: amd64
+Components: main
+Description: FingerSwipe Official Debian/Ubuntu APT Repository
+Date: Mon, 24 Aug 2026 18:02:06 +0000
+MD5Sum:
+ b3f7123508e6fe9a5a6ff56b39163039  main/binary-amd64/Packages
+ 765076e503dbd005f5089d9b959a8933  main/binary-amd64/Packages.gz
+SHA256:
+ 55fff9c8aa16599250a98826da7fc9bddcdd176f7d934034bc6ffd2a31c0e401  main/binary-amd64/Packages
+ f898ea1740e271dd5eb397463d2378e5c830c958baf8bf3dbdabf0d2bd24c258  main/binary-amd64/Packages.gz
